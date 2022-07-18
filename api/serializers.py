@@ -9,6 +9,10 @@ class IndicatorSerializer(serializers.ModelSerializer):
         model = indicators
         fields = '__all__'
 
+    def get(self):
+        total = indicators.objects.all().count()
+        return total
+
 
 class IndicatorTypeSerializer(serializers.ModelSerializer):
     class Meta:

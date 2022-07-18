@@ -16,6 +16,12 @@ urlpatterns = [
          IndicatorTypeCreate.as_view(), name='create_indicator_type'),
     path('create_indicator_group/', IndicatorGroupCreate.as_view(),
          name='create_indicator_group'),
+    path('indicators/<int:limit>/', IndicatorList.as_view(),
+         name='indicators'),
+    path('indicators/filter/<str:from>/<str:to>/', IndicatorList.as_view(),
+         name='filter_ind'),
+    path('indicatorscount/', get_count,
+         name='indicators_count'),
 ]
 
 urlpatterns += router.urls

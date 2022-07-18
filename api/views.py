@@ -7,6 +7,8 @@ from rest_framework import viewsets
 from rest_framework import permissions, authentication
 from .models import *
 from .serializers import *
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 class UserCreate(generics.CreateAPIView):
@@ -56,6 +58,23 @@ class IndicatorTypeViewSet(viewsets.ModelViewSet):
     queryset = indicatorType.objects.all()
     serializer_class = IndicatorTypeSerializer
     permission_classes = ()
+
+
+class IndicatorList(generics.ListAPIView):
+    serializer_class = IndicatorSerializer
+    permission_classes = ()
+
+    def get_queryset(self):
+        """
+        Filter
+        """
+        limit = int(self.kwargs['limit'])
+        return indicators.objects.all()[:limit]
+
+
+@api_view()
+def get_count(request):
+    return Response({"total": indicators.objects.all().count()})
 
 
 class IndicatorTypeCreate(generics.CreateAPIView):
