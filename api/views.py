@@ -9,6 +9,7 @@ from .models import *
 from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.db.models import Q
 
 
 class UserCreate(generics.CreateAPIView):
@@ -70,6 +71,17 @@ class IndicatorList(generics.ListAPIView):
         """
         limit = int(self.kwargs['limit'])
         return indicators.objects.all()[:limit]
+
+
+class IndicatorFilter(generics.ListAPIView):
+    serializer_class = IndicatorSerializer
+    permission_classes = ()
+
+    def get_queryset(self):
+        limit = int(self.kwargs['limit'])
+        from_date = self.kwargs['from_date']
+        to_date = self.kwargs['to_date']
+        return indicators.objects.filter(created__range=[from_date, to_date])[:limit]
 
 
 @api_view()

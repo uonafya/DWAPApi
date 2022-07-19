@@ -1,6 +1,9 @@
 from rest_framework.routers import DefaultRouter
-from django.urls import path
 from .views import *
+from django.urls import path, register_converter
+from .converters import DateConverter
+
+register_converter(DateConverter, 'date')
 
 router = DefaultRouter()
 router.register('listusers', UserViewSet),
@@ -18,7 +21,7 @@ urlpatterns = [
          name='create_indicator_group'),
     path('indicators/<int:limit>/', IndicatorList.as_view(),
          name='indicators'),
-    path('indicators/filter/<str:from>/<str:to>/', IndicatorList.as_view(),
+    path('indicators/filter/<date:from_date>/<date:to_date>/<int:limit>/', IndicatorFilter.as_view(),
          name='filter_ind'),
     path('indicatorscount/', get_count,
          name='indicators_count'),
