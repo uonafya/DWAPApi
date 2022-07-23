@@ -45,3 +45,15 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         token = Token.objects.create(user=user)
         return token.user
+
+
+class middleware_settingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = middleware_settings
+        fields = '__all__'
+
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = schedule_settings
+        fields = '__all__'

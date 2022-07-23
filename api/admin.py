@@ -18,3 +18,6 @@ class indicatorGroupsAdmin(admin.ModelAdmin):
 admin.site.register(indicators, IndicatorAdmin)
 admin.site.register(indicatorType, indicatorTypeAdmin)
 admin.site.register(indicatorGroups, indicatorGroupsAdmin)
+admin.site.register(middleware_settings)
+admin.site.register(total_records)
+admin.site.register(schedule_settings)

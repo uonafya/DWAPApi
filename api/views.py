@@ -1,3 +1,4 @@
+from msilib.schema import ReserveCost
 from django.contrib.auth import authenticate
 from rest_framework import generics
 from rest_framework.response import Response
@@ -10,6 +11,8 @@ from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+import json
 
 
 class UserCreate(generics.CreateAPIView):
@@ -47,6 +50,12 @@ class UserViewSet(viewsets.ModelViewSet):
 class IndicatorViewSet(viewsets.ModelViewSet):
     queryset = indicators.objects.all()
     serializer_class = IndicatorSerializer
+    permission_classes = ()
+
+
+class ScheduleViewSet(viewsets.ModelViewSet):
+    queryset = schedule_settings.objects.all()
+    serializer_class = ScheduleSerializer
     permission_classes = ()
 
 
@@ -89,6 +98,46 @@ def get_count(request):
     return Response({"total": indicators.objects.all().count()})
 
 
+@api_view()
+def get_records_count(request):
+    try:
+        records = total_records.objects.all()
+        totalrecords = 0
+        if len(records) <= 0:
+            totalrecords = 0
+        else:
+            totalrecords = records[0].records
+        print(totalrecords)
+        return Response({"totalrecords": totalrecords})
+    except Exception as e:
+        print(e)
+        return Response({"Error": e})
+
+
+@api_view()
+def sync_data(request):
+    sets = middleware_settings.objects.all().first()
+    return Response({"id": sets.id, "synctdata": str(sets.syncdata).lower(), "client_url": sets.client_url})
+
+
+@csrf_exempt
+def total_count(request):
+    try:
+        data = request.body.decode('utf-8')
+        records = json.loads(data)
+        print(records)
+        myrecords = total_records.objects.all()
+        if len(myrecords) > 0:
+            myrecords = myrecords[0]
+            myrecords.records = int(records['records'])
+        else:
+            myrecords = total_records(records=int(records['records']))
+        myrecords.save()
+        print(myrecords)
+    except Exception as e:
+        print(e)
+
+
 class IndicatorTypeCreate(generics.CreateAPIView):
     serializer_class = IndicatorTypeSerializer
     permission_classes = ()
@@ -102,4 +151,10 @@ class IndicatorGroupViewSet(viewsets.ModelViewSet):
 
 class IndicatorGroupCreate(generics.CreateAPIView):
     serializer_class = IndicatorGroupSerializer
+    permission_classes = ()
+
+
+class MiddlewareSettingsViewSet(viewsets.ModelViewSet):
+    queryset = middleware_settings.objects.all()
+    serializer_class = middleware_settingSerializer
     permission_classes = ()
