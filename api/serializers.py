@@ -57,3 +57,9 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = schedule_settings
         fields = '__all__'
+
+
+class FileUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Data_Mapping_Files
+        fields = ['file']

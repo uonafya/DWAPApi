@@ -59,6 +59,12 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     permission_classes = ()
 
 
+class FileUploadViewSet(viewsets.ModelViewSet):
+    queryset = Data_Mapping_Files.objects.all()
+    serializer_class = FileUploadSerializer
+    permission_classes = ()
+
+
 class IndicatorCreate(generics.CreateAPIView):
     serializer_class = IndicatorSerializer
     permission_classes = ()

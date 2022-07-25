@@ -102,8 +102,21 @@ class total_records(models.Model):
     records = models.IntegerField(default=0)
 
     def __str__(self):
-        return str(self.records)
+        return str(self.records) if self.records is not None or '' else "No Files yet!"
 
     class Meta:
         db_table = 'khis_total_records'
         verbose_name_plural = 'Total Records'
+
+
+class Data_Mapping_Files(models.Model):
+    file = models.FileField(upload_to='mapping/files/%Y-%m-%d/')
+    final_file = models.FileField(
+        upload_to='mapping/final/%Y-%m-%d/', blank=True, null=True)
+
+    def __str__(self):
+        return self.file.url
+
+    class Meta:
+        db_table = 'data_mapping_files'
+        verbose_name_plural = 'Data Mapping Files'
