@@ -63,3 +63,9 @@ class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Data_Mapping_Files
         fields = ['file']
+
+
+class mappedDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = mapped_data
+        fields = '__all__'

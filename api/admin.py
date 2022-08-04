@@ -4,7 +4,8 @@ from .models import *
 
 
 class IndicatorAdmin(admin.ModelAdmin):
-    search_fields = ('name', 'id', 'created', 'lastUpdated', 'displayName')
+    search_fields = ('MOH_Indicator_ID', 'MOH_Indicator_Name', 'created',
+                     'lastUpdated', 'displayName')
 
 
 class indicatorTypeAdmin(admin.ModelAdmin):
@@ -22,3 +23,4 @@ admin.site.register(middleware_settings)
 admin.site.register(total_records)
 admin.site.register(schedule_settings)
 admin.site.register(Data_Mapping_Files)
+admin.site.register(mapped_data)

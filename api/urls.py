@@ -2,7 +2,7 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 from django.urls import path, register_converter
 from .converters import DateConverter
-
+from .data_mapping import *
 register_converter(DateConverter, 'date')
 
 router = DefaultRouter()
@@ -34,6 +34,9 @@ urlpatterns = [
          name='sync_data'),
     path('total_count/', total_count,
          name='total_count'),
+    path('map_data', map_data,
+         name='map_data'),
+    path('get_mapped_data', GetMappedFiles.as_view(),
+         name='get_mapped_data'),
 ]
-
 urlpatterns += router.urls

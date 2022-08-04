@@ -6,8 +6,9 @@ from django.db import models
 
 
 class indicators(models.Model):
-    id = models.CharField(max_length=500, primary_key=True)
-    name = models.CharField(max_length=500)
+    MOH_Indicator_ID = models.CharField(max_length=500, primary_key=True)
+    MOH_Indicator_Name = models.CharField(
+        max_length=500, blank=True, null=True)
     lastUpdated = models.DateTimeField(blank=True, null=True)
     created = models.DateTimeField(blank=True, null=True)
     shortName = models.CharField(max_length=500, blank=True, null=True)
@@ -32,7 +33,7 @@ class indicators(models.Model):
         'indicatorGroups', blank=True, null=True)
 
     def __str__(self):
-        return self.displayName
+        return self.MOH_Indicator_ID
 
     class Meta:
         db_table = 'moh_indicators'
@@ -110,9 +111,9 @@ class total_records(models.Model):
 
 
 class Data_Mapping_Files(models.Model):
-    file = models.FileField(upload_to='mapping/files/%Y-%m-%d/')
+    file = models.FileField(upload_to='mapping/')
     final_file = models.FileField(
-        upload_to='mapping/final/%Y-%m-%d/', blank=True, null=True)
+        upload_to='final/', blank=True, null=True)
 
     def __str__(self):
         return self.file.url
@@ -120,3 +121,29 @@ class Data_Mapping_Files(models.Model):
     class Meta:
         db_table = 'data_mapping_files'
         verbose_name_plural = 'Data Mapping Files'
+
+
+class mapped_data(models.Model):
+    Date_Mapped = models.DateTimeField(
+        auto_now_add=True, blank=True, null=True)
+    DATIM_Indicator_Category = models.CharField(
+        max_length=255, blank=True, null=True)
+    DATIM_Indicator_ID = models.CharField(
+        max_length=500, blank=True, null=True)
+    DATIM_Disag_Name = models.CharField(max_length=255, blank=True, null=True)
+    DATIM_Disag_ID = models.CharField(max_length=255, blank=True, null=True)
+    Operation = models.CharField(max_length=20, blank=True, null=True)
+    MOH_Indicator_Name = models.CharField(
+        max_length=1500, blank=True, null=True)
+    MOH_Indicator_ID = models.CharField(max_length=500, blank=True, null=True)
+    MOH_Disag_Name = models.CharField(max_length=255, blank=True, null=True)
+    MOH_Disag_ID = models.CharField(max_length=255, blank=True, null=True)
+    Disaggregation_Type = models.CharField(
+        max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.DATIM_Disag_Name
+
+    class Meta:
+        db_table = 'datim_mapped_data'
+        verbose_name_plural = 'Fianl Mapped Data'
