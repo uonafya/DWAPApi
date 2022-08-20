@@ -136,8 +136,8 @@ class mapped_data(models.Model):
     MOH_Indicator_Name = models.CharField(
         max_length=1500, blank=True, null=True)
     MOH_Indicator_ID = models.CharField(max_length=500, blank=True, null=True)
-    MOH_Disag_Name = models.CharField(max_length=255, blank=True, null=True)
-    MOH_Disag_ID = models.CharField(max_length=255, blank=True, null=True)
+    # MOH_Disag_Name = models.CharField(max_length=255, blank=True, null=True)
+    # MOH_Disag_ID = models.CharField(max_length=255, blank=True, null=True)
     Disaggregation_Type = models.CharField(
         max_length=255, blank=True, null=True)
 
@@ -145,5 +145,5 @@ class mapped_data(models.Model):
         return self.DATIM_Disag_Name
 
     class Meta:
-        db_table = 'datim_mapped_data'
+        db_table = 'mapped_data'
         verbose_name_plural = 'Fianl Mapped Data'

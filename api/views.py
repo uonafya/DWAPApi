@@ -24,6 +24,7 @@ class UserCreate(generics.CreateAPIView):
 class LoginView(APIView):
 
     permission_classes = ()
+    authentication_classes = ()
     serializer_class = UserSerializer
 
     def post(self, request,):

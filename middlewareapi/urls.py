@@ -21,7 +21,7 @@ urlpatterns = [
     path('api/', include("api.urls")),
 ]
 # default: "Django Administration"
-admin.site.site_header = 'KHIS Indicators Administration'
+admin.site.site_header = 'Datim - KHIS Data IL Administration'
 # default: "Site administration"
 admin.site.index_title = 'Admin Area'
-admin.site.site_title = 'KHIS Indicators Administration'
+admin.site.site_title = 'Datim - KHIS Data IL Administration'

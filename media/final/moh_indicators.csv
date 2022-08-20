@@ -1,0 +1,45 @@
+MOH_Indicator_ID,MOH_Indicator_Name,Disaggregation Type
+cBTa1jVzT8f,MOH 731 Positive_25+(F) HV01-25,Coarse
+D9YwtS6RhQ1,MOH 731 Positive_10-14(M) HV01-18,Coarse
+du5RMT3aecB,MOH 731 Positive_1-9 HV01-17,Coarse
+F9OR49Lc1aR,MOH 731 Positive_20-24(M) HV01-22,Coarse
+J4vNm7YEkdj,MOH 731 Positive_25+(M) HV01-24,Coarse
+kLXGWRLzCAw,MOH 731 Positive_15-19(M) HV01-20,Coarse
+oCFXmpol7D8,MOH 731 Positive_20-24(F) HV01-23,Coarse
+xMNhnyu7vm1,MOH 731 Positive_15-19(F) HV01-21,Coarse
+wu0ITFRjUzF,MOH 731 Positive_10-14(F) HV01-19,Coarse
+DaNcGZnkclz,MOH 731 Start ART_15-19 (F) HV03-021,Coarse
+Hbc2qRi0U5x,MOH 731 Start ART_1-9 HV03-017,Coarse
+K59f8nZ5vhy,MOH 731 Start ART_20-24(M) HV03-022,Coarse
+LC2OqnUC5Sn,MOH 731 Start ART_10-14(M) HV03-018,Coarse
+mACm1JUzeLT,MOH 731 Start ART_<1 HV03-016,Coarse
+Nv4OkbdDvmm,MOH 731 Start ART_25+ (F) HV03-025,Coarse
+SCMKsiNj6c5,MOH 731 Start ART_25+(M) HV03-024 HV03-022,Coarse
+yWkSi8L3qGm,MOH 731 Start ART_15-19(M) HV03-020,Coarse
+IqkEA3etj2f,MOH 731 Completed IPT_12months HV03-066,Coarse
+zNCSlBKbS6d,OH 731 Start ART_20-24 (F) HV03-023,Coarse
+jthpt5cVV9c,MOH 731 Start ART_10-14 (F) HV03-019,Coarse
+AQsTt7jtKbt,MOH 731 On ART_15-19 (F) HV03-033,Coarse
+e93GKJTHKAX,MOH 731 On ART_20-24(M) HV03-034,Coarse
+EhZQp3PTA3C,MOH 731 On ART_20-24 (F) HV03-035,Coarse
+GSEmLUnrvzj,MOH 731 On ART_10-14 (F) HV03-031,Coarse
+Jbu4if6gtDp,MOH 731 On ART_10-14(M) HV03-030,Coarse
+oOOnacUi9Jm,MOH 731 On ART_15-19(M) HV03-032,Coarse
+pR7VzBydoj3,MOH 731 On ART_25+(M) HV03-036,Coarse
+wbJOu4h2SSz,MOH 731 On ART_1-9 HV03-029,Coarse
+yNCUlEYkmyA,MOH 731 On ART_25+ (F) HV03-037,Coarse
+SJL4k6Gl53C,MOH 731 On ART_<1 HV03-028,Coarse
+atSQz5O7e2A,MOH 731 Tested_25+ (F) HV01-09,Coarse
+gMICOUtzqRb,MOH 731 Tested_10-14(F) HV01-03,Coarse
+gTkVw97FnQK,MOH 731 Tested_25+ (M) HV01-08,Coarse
+JiuqbydCIcy,MOH 731 Tested_20-24(F) HV01-07,Coarse
+lj9QYJqS7bN,MOH 731 Tested_10-14 (M) HV01-02,Coarse
+OePJt8CcZ0d,MOH 731 Tested_1-9 HV01-01,Coarse
+pkShOkgNQt2,MOH 731 Tested_20-24(M) HV01-06,Coarse
+XiRbc0DSMOH,MOH 731 Tested_15-19 (M) HV01-04,Coarse
+YXJf27jfkvS,MOH 731 Tested_15-19(F) HV01-05,Coarse
+ETX9cUWF43c,MOH 731 Initial test at ANC HV02-04,Coarse
+qSgLzXh46n9,MOH 731 Known Positive at 1st ANC HV02-03,Coarse
+lJpaBye9B0H,MOH 731 On HAART at 1st ANC HV02-16,Coarse
+WNFWVHMqPv9,MOH 731 Start HAART_ANC HV02-17,Coarse
+nwXS5vxrrr7,MOH 731 Positive Results_ANC HV02-11,Coarse
