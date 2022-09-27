@@ -42,6 +42,8 @@ urlpatterns = [
          generate_comparison_file, name='generate_comparison_file'),
     path('get_mapped_data', GetMappedFiles.as_view(),
          name='get_mapped_data'),
+    path('get_comparison_data/<str:county>/<str:category>/<date:from_date>/<date:to_date>/', GetComparisonRecords.as_view(),
+         name='get_comparison_data'),
     path('load_filter_data/', load_filter_data,
          name='load_filter_data'),
 ]

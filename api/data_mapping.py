@@ -157,12 +157,14 @@ def append_data(mydict, m, d, check=1):
         })
     else:
         mydict.append({
+            'created': m['created'],
             'facility': m['facility'],
             'ward': m['ward'],
             'subcounty': m['subcounty'],
             'county': m['county'],
             'MOH_FacilityID': m['MOH_UID'],
             'MOH_IndicatorCode': m['MOH_Indicator_ID'],
+            'category': d['DATIM_Indicator_Category'],
             'DATIM_Disag_ID': d['DATIM_Disag_ID'],
             'indicators':  m['MOH_Indicator_Name'],
             'DATIM_Disag_Name': d['DATIM_Disag_Name'],
@@ -595,65 +597,67 @@ def compare_data(mohdict, datimydict):
 
 @api_view()
 def generate_comparison_file(request, use_api_data, category, county, from_date, to_date):
-    try:
-        datim_df = get_datim_non_null_values(category, county)
-        mohdict = {}
-        datimdict = {}
-        datim_df['created'] = pd.to_datetime(
-            datim_df['created'], format='%Y-%m-%d')
+    # try:
+    datim_df = get_datim_non_null_values(category, county)
+    mohdict = {}
+    datimdict = {}
+    datim_df['created'] = pd.to_datetime(
+        datim_df['created'], format='%Y-%m-%d')
+    # Filter data between two dates
+    datim_df = datim_df.loc[(datim_df['created'] >= str(
+        from_date)) & (datim_df['created'] <= str(to_date))]
+    if str(use_api_data).lower() == 'api data':
+        datimdict = datim_df.to_dict(orient='records')
+        objects = indicators.objects.filter(Q(MOH_Indicator_Name__icontains='MOH 731'), created__range=[
+                                            from_date, to_date]).order_by('-created')
+        mohdict = list(objects.values())
+    else:
+        datimdict = datim_df.to_dict(orient='records')
+        print(datim_df.info())
+        moh_df = get_moh_non_null_values(county)
+        moh_df['created'] = pd.to_datetime(
+            moh_df['created'], format='%Y-%m-%d')
         # Filter data between two dates
-        datim_df = datim_df.loc[(datim_df['created'] >= str(
-            from_date)) & (datim_df['created'] <= str(to_date))]
-        if str(use_api_data).lower() == 'api data':
-            datimdict = datim_df.to_dict(orient='records')
-            objects = indicators.objects.filter(Q(MOH_Indicator_Name__icontains='MOH 731'), created__range=[
-                                                from_date, to_date]).order_by('-created')
-            mohdict = list(objects.values())
-        else:
-            datimdict = datim_df.to_dict(orient='records')
-            print(datim_df.info())
-            moh_df = get_moh_non_null_values(county)
-            moh_df['created'] = pd.to_datetime(
-                moh_df['created'], format='%Y-%m-%d')
-            # Filter data between two dates
-            moh_df = moh_df.loc[(moh_df['created'] >= str(
-                from_date)) & (moh_df['created'] <= str(to_date))]
-            print(moh_df.info())
-            mohdict = moh_df.to_dict(orient='records')
-        print(datim_df.head(1))
-        print(moh_df.head(1))
-        if len(mohdict) <= 0:
-            return Response({"message": "Could not find data to process!"})
-        temp_df = compare_data(mohdict, datimdict)
-        temp_df['weight'] = temp_df.datim_data/temp_df.datim_data.sum()
-        # calculate concodance
-        temp_df['concodance(%)'] = (temp_df['weight']*100*(((temp_df['khis_data']+temp_df['datim_data']) -
-                                                            abs(temp_df['khis_data']-temp_df['datim_data']))/(temp_df['khis_data']+temp_df['datim_data'])))
-        temp_df['khis_minus_datim'] = temp_df['khis_data'] - \
-            temp_df['datim_data']
-        final_dict = temp_df.to_dict(orient='records')
-        for record in final_dict:
-            final_data, created = final_comparison_data.objects.get_or_create(
-                facility=record['facility'],
-                ward=record['ward'],
-                subcounty=record['subcounty'],
-                county=record['county'],
-                MOH_FacilityID=record['MOH_FacilityID'],
-                DATIM_Disag_ID=record['DATIM_Disag_ID'],
-                MOH_IndicatorCode=record['MOH_IndicatorCode'],
-                indicators=record['indicators'],
-                DATIM_Disag_Name=record['DATIM_Disag_Name'],
-                khis_data=record['khis_data'],
-                datim_data=record['datim_data'],
-                weight=record['weight'],
-                concodance=record['concodance(%)'],
-                khis_minus_datim=record['khis_minus_datim'])
-        print(temp_df['concodance(%)'].sum())
-        print(final_data)
-        return Response({"message": "Data Comparison mapping for {} completed successfully!".format(str(county))})
-    except Exception as e:
-        print("mapping error:{}".format(e))
-        return Response({"error": str(e)})
+        moh_df = moh_df.loc[(moh_df['created'] >= str(
+            from_date)) & (moh_df['created'] <= str(to_date))]
+        print(moh_df.info())
+        mohdict = moh_df.to_dict(orient='records')
+    print(datim_df.head(1))
+    print(moh_df.head(1))
+    if len(mohdict) <= 0:
+        return Response({"message": "Could not find data to process!"})
+    temp_df = compare_data(mohdict, datimdict)
+    temp_df['weight'] = temp_df.datim_data/temp_df.datim_data.sum()
+    # calculate concodance
+    temp_df['concodance(%)'] = (temp_df['weight']*100*(((temp_df['khis_data']+temp_df['datim_data']) -
+                                                        abs(temp_df['khis_data']-temp_df['datim_data']))/(temp_df['khis_data']+temp_df['datim_data'])))
+    temp_df['khis_minus_datim'] = temp_df['khis_data'] - \
+        temp_df['datim_data']
+    final_dict = temp_df.to_dict(orient='records')
+    for record in final_dict:
+        final_data, created = final_comparison_data.objects.get_or_create(
+            created=pd.to_datetime(record['created']).date(),
+            facility=record['facility'],
+            ward=record['ward'],
+            subcounty=record['subcounty'],
+            county=record['county'],
+            MOH_FacilityID=record['MOH_FacilityID'],
+            category=record['category'],
+            DATIM_Disag_ID=record['DATIM_Disag_ID'],
+            MOH_IndicatorCode=record['MOH_IndicatorCode'],
+            indicators=record['indicators'],
+            DATIM_Disag_Name=record['DATIM_Disag_Name'],
+            khis_data=record['khis_data'],
+            datim_data=record['datim_data'],
+            weight=record['weight'],
+            concodance=record['concodance(%)'],
+            khis_minus_datim=record['khis_minus_datim'])
+    print(temp_df['concodance(%)'].sum())
+    print(final_data)
+    return Response({"message": "Data Comparison mapping for {} completed successfully!".format(str(county))})
+    # except Exception as e:
+    #     print("mapping error:{}".format(e))
+    #     return Response({"error": str(e)})
 
 
 class GetMappedFiles(generics.ListAPIView):

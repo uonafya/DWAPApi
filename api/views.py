@@ -121,6 +121,18 @@ class IndicatorFilter(generics.ListAPIView):
         return indicators.objects.filter(created__range=[from_date, to_date])[:limit]
 
 
+class GetComparisonRecords(generics.ListAPIView):
+    serializer_class = ComparisonDataSerializer
+    permission_classes = ()
+
+    def get_queryset(self):
+        from_date = self.kwargs['from_date']
+        to_date = self.kwargs['to_date']
+        county = self.kwargs['county']
+        category = self.kwargs['category']
+        return final_comparison_data.objects.filter(Q(county__icontains=county, category__icontains=category), created__range=[from_date, to_date])
+
+
 @api_view()
 def get_count(request):
     return Response({"total": indicators.objects.all().count()})

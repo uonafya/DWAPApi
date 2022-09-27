@@ -53,6 +53,12 @@ class middleware_settingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ComparisonDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = final_comparison_data
+        fields = '__all__'
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = indicator_category

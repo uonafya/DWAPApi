@@ -1,6 +1,7 @@
 from operator import mod
 from tabnanny import verbose
 from unicodedata import category
+from venv import create
 from django.db import models
 
 # indicators
@@ -49,10 +50,11 @@ class indicators(models.Model):
         db_table = 'moh_indicators'
         verbose_name_plural = 'indicators'
 
+
 class indicator_category(models.Model):
     category_name = models.CharField(
-        max_length=500,primary_key=True)
-    
+        max_length=500, primary_key=True)
+
     def __str__(self):
         return self.category_name
 
@@ -62,7 +64,7 @@ class indicator_category(models.Model):
 
 
 class counties(models.Model):
-    county_name = models.CharField(max_length=500,primary_key=True)
+    county_name = models.CharField(max_length=500, primary_key=True)
 
     def __str__(self):
         return self.county_name
@@ -70,6 +72,7 @@ class counties(models.Model):
     class Meta:
         db_table = 'counties'
         verbose_name_plural = 'Counties'
+
 
 class indicatorType(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
@@ -176,12 +179,13 @@ class mapped_data(models.Model):
 
     def __str__(self):
         return self.DATIM_Disag_Name
+
     class Meta:
         verbose_name_plural = 'Mapped Data'
-    
+
+
 class final_comparison_data(models.Model):
-    Date_Mapped = models.DateTimeField(
-    auto_now_add=True, blank=True, null=True)
+    created = models.DateField(blank=True, null=True)
     facility = models.CharField(
         max_length=500, blank=True, null=True)
     ward = models.CharField(
@@ -192,6 +196,8 @@ class final_comparison_data(models.Model):
     DATIM_Disag_ID = models.CharField(max_length=500, blank=True, null=True)
     MOH_IndicatorCode = models.CharField(max_length=500, blank=True, null=True)
     indicators = models.CharField(
+        max_length=1500, blank=True, null=True)
+    category = models.CharField(
         max_length=1500, blank=True, null=True)
     DATIM_Disag_Name = models.CharField(
         max_length=1500, blank=True, null=True)
