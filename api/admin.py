@@ -19,7 +19,26 @@ class MappingAdmin(admin.ModelAdmin):
                    'MOH_Indicator_Name', 'Operation', 'MOH_Indicator_ID']
     list_display = ['DATIM_Indicator_Category', 'Operation', 'DATIM_Disag_Name',
                     'MOH_Indicator_Name',  'MOH_Indicator_ID']
+    
 
+class ComparisonAdmin(admin.ModelAdmin):
+    search_fields = ('facility', 'ward', 'subcounty', 'county',
+                     'indicators', 'khis_minus_datim', 'concodance')
+    list_filter = ['Date_Mapped', 'facility', 'ward',
+                   'subcounty', 'county']
+    list_display = ['facility', 'ward', 'subcounty', 'county', 'MOH_FacilityID','MOH_IndicatorCode', 'indicators', 'khis_data', 'datim_data', 'weight','concodance','khis_minus_datim']
+
+
+class CountyAdmin(admin.ModelAdmin):
+    search_fields = ('county_name',)
+    list_filter = ['county_name',]
+    list_display = ['county_name',]
+    
+
+class CategoryAdmin(admin.ModelAdmin):
+    search_fields = ('category_name',)
+    list_filter = ['category_name',]
+    list_display = ['category_name',]
 
 class indicatorTypeAdmin(admin.ModelAdmin):
     search_fields = ('name', 'id')
@@ -37,3 +56,6 @@ admin.site.register(total_records)
 admin.site.register(schedule_settings)
 admin.site.register(Data_Mapping_Files)
 admin.site.register(mapped_data, MappingAdmin)
+admin.site.register(final_comparison_data, ComparisonAdmin)
+admin.site.register(counties, CountyAdmin)
+admin.site.register(indicator_category, CategoryAdmin)

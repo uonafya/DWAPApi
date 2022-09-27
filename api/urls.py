@@ -13,6 +13,8 @@ router.register('listindicators', IndicatorViewSet)
 router.register('listindicator_types', IndicatorTypeViewSet)
 router.register('listindicator_groups', IndicatorGroupViewSet)
 router.register('listmiddleware_settings', MiddlewareSettingsViewSet)
+router.register('listscounties', CountyViewSet)
+router.register('listscategories', IndicatorCatsViewSet)
 
 urlpatterns = [
     path("users/", UserCreate.as_view(), name="user_create"),
@@ -34,9 +36,13 @@ urlpatterns = [
          name='sync_data'),
     path('total_count/', total_count,
          name='total_count'),
-    path('map_data', map_data,
+    path('map_data/<str:category>/<date:from_date>/<date:to_date>/<int:limit>/', map_data,
          name='map_data'),
+    path('generate_comparison_file/<str:use_api_data>/<str:county>/<str:category>/<date:from_date>/<date:to_date>/',
+         generate_comparison_file, name='generate_comparison_file'),
     path('get_mapped_data', GetMappedFiles.as_view(),
          name='get_mapped_data'),
+    path('load_filter_data/', load_filter_data,
+         name='load_filter_data'),
 ]
 urlpatterns += router.urls

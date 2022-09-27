@@ -1,0 +1,11 @@
+DATIM_Indicator_Category,DATIM_Indicator_ID,DATIM_Disag_ID,DATIM_Disag_Name,Operation,MOH_Indicator_Name,MOH_Indicator_ID,Disaggregation Type
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,Yf1BiWq71NE,15+ | Female,ADD,MOH 731 On ART_25+ (F) HV03-037,yNCUlEYkmyA,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,uURluLqPIJ5,<15 | Unknown Sex,ADD,MOH 731 On ART_1-9 HV03-029,wbJOu4h2SSz,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,XX7hDj6iz0D,15+ | Male,ADD,MOH 731 On ART_25+(M) HV03-036,pR7VzBydoj3,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,XX7hDj6iz0D,15+ | Male,ADD,MOH 731 On ART_15-19(M) HV03-032,oOOnacUi9Jm,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,zHSL7ATXJib,<15 | Male,ADD,MOH 731 On ART_10-14(M) HV03-030,Jbu4if6gtDp,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,chrwpNxHlQQ,<15 | Female,ADD,MOH 731 On ART_10-14 (F) HV03-031,GSEmLUnrvzj,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,Yf1BiWq71NE,15+ | Female,ADD,MOH 731 On ART_20-24 (F) HV03-035,EhZQp3PTA3C,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,XX7hDj6iz0D,15+ | Male,ADD,MOH 731 On ART_20-24(M) HV03-034,e93GKJTHKAX,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,Yf1BiWq71NE,15+ | Female,ADD,MOH 731 On ART_15-19 (F) HV03-033,AQsTt7jtKbt,Coarse
+TX_CURR,TX_CURR_N_MOH_Age_Agg_Sex_HIVStatus,uURluLqPIJ5,<15 | Unknown Sex,ADD,MOH 731 On ART_<1 HV03-028,SJL4k6Gl53C,Coarse

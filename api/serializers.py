@@ -53,6 +53,18 @@ class middleware_settingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = indicator_category
+        fields = '__all__'
+
+
+class CountySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = counties
+        fields = '__all__'
+
+
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = schedule_settings
@@ -62,7 +74,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
 class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Data_Mapping_Files
-        fields = ['file']
+        fields = '__all__'
 
 
 class mappedDataSerializer(serializers.ModelSerializer):

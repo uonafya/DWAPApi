@@ -1,4 +1,3 @@
-from msilib.schema import ReserveCost
 from django.contrib.auth import authenticate
 from rest_framework import generics
 from rest_framework.response import Response
@@ -64,6 +63,28 @@ class FileUploadViewSet(viewsets.ModelViewSet):
     queryset = Data_Mapping_Files.objects.all()
     serializer_class = FileUploadSerializer
     permission_classes = ()
+
+    # def create(self, request):
+    #     try:
+    #         serializer = FileUploadSerializer(
+    #             data=request.data, context={"request": request})
+    #         serializer.is_valid(raise_exception=True)
+    #         serializer.save()
+
+    #         dict_response = {"error": False,
+    #                          "message": "File Saved Successfully"}
+    #     except:
+    #         dict_response = {"error": True,
+    #                          "message": "Error During Saving Data"}
+    #     return Response(dict_response)
+
+    def list(self, request):
+        files = Data_Mapping_Files.objects.all()
+        serializer = FileUploadSerializer(
+            files, many=True, context={"request": request})
+        response_dict = {"error": False,
+                         "message": "All  List Data", "data": serializer.data}
+        return Response(response_dict)
 
 
 class IndicatorCreate(generics.CreateAPIView):
@@ -153,6 +174,18 @@ class IndicatorTypeCreate(generics.CreateAPIView):
 class IndicatorGroupViewSet(viewsets.ModelViewSet):
     queryset = indicatorGroups.objects.all()
     serializer_class = IndicatorGroupSerializer
+    permission_classes = ()
+
+
+class IndicatorCatsViewSet(viewsets.ModelViewSet):
+    queryset = indicator_category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = ()
+
+
+class CountyViewSet(viewsets.ModelViewSet):
+    queryset = counties.objects.all()
+    serializer_class = CountySerializer
     permission_classes = ()
 
 
