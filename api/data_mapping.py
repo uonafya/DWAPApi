@@ -116,9 +116,15 @@ def load_datim_csv(category, county, fromdate):
             datim_df.rename(columns={"Apr to Jun {}".format(
                 year-1): "datim_data"}, inplace=True)
             datim_df['created'] = '{}-04-01'.format(year)
-        elif str(fromdate) == '{}-03-07'.format(year):
+        elif str(fromdate) == '{}-07-01'.format(year):
+            datim_df.drop(columns=["Oct to Dec {}".format(
+                year-1), "Jan to Mar {}".format(year)], inplace=True)
+            datim_df.rename(columns={"Jul to Sept {}".format(
+                year-1): "datim_data"}, inplace=True)
             datim_df['created'] = '{}-07-01'.format(year)
         else:
+            datim_df.rename(columns={"Oct to Dec {}".format(
+                year-1): "datim_data"}, inplace=True)
             datim_df['created'] = '{}-10-01'.format(year-1)
         # UID Mappings
         # datim_cats = pd.merge(load_mapping_csv(category, county), datim_df,
@@ -179,7 +185,7 @@ def get_datim_non_null_values(category, county, fromdate):
         print(datim_df.head(1))
     else:
         return pd.DataFrame([])
-    return datim_df
+    return datim_df  # .iloc[:1000]
 
 
 def get_moh_non_null_values(county):
@@ -196,7 +202,7 @@ def get_moh_non_null_values(county):
     for i, dt in moh_df.Period.items():
         moh_df['created'][i] = "{}-{}-01".format(dt[:-2], dt[-2:])
     print(moh_df.head(1))
-    return moh_df
+    return moh_df  # .iloc[:1000]
 
 
 def append_data(mydict, m, d, check=1):
@@ -527,8 +533,7 @@ def compare_data(mohdict, datimydict):
                     mageset = int(ageset.strip("+"))
                 else:
                     mageset = int(ageset.strip('<'))
-            print(
-                "mageset:{} - dageset:{} <=> ageset:{}".format(mageset, dageset, ageset))
+            #print("mageset:{} - dageset:{} <=> ageset:{}".format(mageset, dageset, ageset))
             # print(ageset)
             # check gender
             if re.search("[r'('][F][r')']", mk0) != None:
@@ -537,7 +542,7 @@ def compare_data(mohdict, datimydict):
                 gender = 'Male'
             else:
                 gender = 'Unknown Sex'
-            print(gender)
+            # print(gender)
             mfacility = str(m['facility']).split(' ')[0]
             dfacility = str(d['facility']).split(' ')[0]
             if re.search('Completed IPT_12months', m['MOH_Indicator_Name']) != None or re.search('Completed IPT_6months', m['MOH_Indicator_Name']) != None and re.search('TB_PREV', d['DATIM_Indicator_Category']) != None:
@@ -552,7 +557,8 @@ def compare_data(mohdict, datimydict):
                 if (d['DATIM_Indicator_Category'] == 'TX_CURR') and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
                     # <15 M|F 10-14 <1 1-9
                     if get_regex_value("([<]\d+\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.search(gender, dk0) != None and mageset <= dageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None:
-                        # print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
+                        print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(
+                            j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
                         found = True
                         append_data(temp_dict, m, d, 0)
                         datimydict.remove(datimydict[j])
@@ -566,14 +572,16 @@ def compare_data(mohdict, datimydict):
                         break
                     # 15+ M|F
                     elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and mageset <= datim_25_plus and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
-                        # print("Facility:{} - {}=>{}\t<= TX_CURR =>\t{}=>{}".format(m['facility'],j,d['DATIM_Disag_Name'],i,m['MOH_Indicator_Name']))
+                        print("Facility:{} - {}=>{}\t<= TX_CURR =>\t{}=>{}".format(
+                            m['facility'], j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
                         found = True
                         append_data(temp_dict, m, d, 0)
                         datimydict.remove(datimydict[j])
                         break
                     # 25+ M|F
                     elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and re.match(ageset, check_datim_ageset) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
-                        # print("Facility:{} - {}=>{}\t<= TX_CURR =>\t{}=>{}".format(m['facility'],j,d['DATIM_Disag_Name'],i,m['MOH_Indicator_Name']))
+                        print("Facility:{} - {}=>{}\t<= TX_CURR =>\t{}=>{}".format(
+                            m['facility'], j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
                         found = True
                         append_data(temp_dict, m, d, 0)
                         datimydict.remove(datimydict[j])
@@ -710,8 +718,8 @@ def compare_data(mohdict, datimydict):
                         append_data(temp_dict, m, d, 0)
                         datimydict.remove(datimydict[j])
                         break
-        # if found:
-        #  continue
+        if found:
+            continue
     # print(temp_dict)
     temp_df = pd.DataFrame(temp_dict)
     temp_df.drop_duplicates(inplace=True)
@@ -747,9 +755,13 @@ def generate_comparison_file(request, use_api_data, category, county, from_date,
             from_date)) & (moh_df['created'] <= str(to_date))]
         print(moh_df.info())
         mohdict = moh_df.to_dict(orient='records')
-    if len(mohdict) <= 0 or len(datim_df) <= 0:
+    if len(mohdict) == 0:
+        return Response({"message": "Could not find data to process!"})
+    if len(datimdict) == 0:
         return Response({"message": "Could not find data to process!"})
     temp_df = compare_data(mohdict, datimdict)
+    if temp_df.empty:
+        return Response({"message": "Could not find any match for the dataset supplied!"})
     temp_df['weight'] = temp_df.datim_data/temp_df.datim_data.sum()
     # calculate concodance
     temp_df['concodance(%)'] = (temp_df['weight']*100*(((temp_df['khis_data']+temp_df['datim_data']) -

@@ -26,7 +26,7 @@ class ComparisonAdmin(admin.ModelAdmin):
                      'indicators', 'khis_minus_datim', 'concodance')
     list_filter = ['created', 'county', 'facility', 'ward',
                    'subcounty']
-    list_display = ['facility', 'ward', 'subcounty', 'county', 'MOH_FacilityID', 'MOH_IndicatorCode',
+    list_display = ['facility', 'ward', 'subcounty', 'county', 'MOH_FacilityID', 'MOH_IndicatorCode', 'DATIM_Disag_Name',
                     'indicators', 'khis_data', 'datim_data', 'weight', 'concodance', 'khis_minus_datim']
 
 
