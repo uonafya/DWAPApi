@@ -185,7 +185,7 @@ def get_datim_non_null_values(category, county, fromdate):
         print(datim_df.head(1))
     else:
         return pd.DataFrame([])
-    return datim_df  # .iloc[:1000]
+    return datim_df.iloc[:1000]
 
 
 def get_moh_non_null_values(county):
@@ -202,7 +202,7 @@ def get_moh_non_null_values(county):
     for i, dt in moh_df.Period.items():
         moh_df['created'][i] = "{}-{}-01".format(dt[:-2], dt[-2:])
     print(moh_df.head(1))
-    return moh_df  # .iloc[:1000]
+    return moh_df.iloc[:2000]
 
 
 def append_data(mydict, m, d, check=1):
@@ -491,8 +491,9 @@ def compare_data(mohdict, datimydict):
             # print(mk0)
             # print(dk0)
             # DATIM ageset
-            pattern = r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})"  # "(\d+)"
-            datimageset = get_regex_value(pattern, dk0)
+            # "(\d+)"
+            datimagesetpattern = r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})"
+            datimageset = get_regex_value(datimagesetpattern, dk0)
             if datimageset != None or '':
                 check_datim_ageset = ""
                 if re.search("[-]", datimageset) != None:
@@ -518,7 +519,7 @@ def compare_data(mohdict, datimydict):
                 elif dageset > 19 and dageset <= 24:  # 15+
                     dk0 = dk0.replace(datimageset, "15+")
                     check_datim_ageset = "20-24"
-                if dageset >= 25:  # 15+
+                if dageset >= 25:  # 15+ 50-54
                     dk0 = dk0.replace(datimageset, "15+")
                     datim_25_plus = 25
             # print(dk0)
@@ -533,7 +534,7 @@ def compare_data(mohdict, datimydict):
                     mageset = int(ageset.strip("+"))
                 else:
                     mageset = int(ageset.strip('<'))
-            #print("mageset:{} - dageset:{} <=> ageset:{}".format(mageset, dageset, ageset))
+            # print("mageset:{} - dageset:{} <=> ageset:{}".format(mageset, dageset, ageset))
             # print(ageset)
             # check gender
             if re.search("[r'('][F][r')']", mk0) != None:
@@ -548,7 +549,8 @@ def compare_data(mohdict, datimydict):
             if re.search('Completed IPT_12months', m['MOH_Indicator_Name']) != None or re.search('Completed IPT_6months', m['MOH_Indicator_Name']) != None and re.search('TB_PREV', d['DATIM_Indicator_Category']) != None:
                 # re.search("([<]|[+]", dk0) != None and re.search('(Female|Male|Unknown Sex)', dk0) != None and re.search('(Newly Enrolled|Previously Enrolled)', dk0) != None and
                 if re.match(mfacility, dfacility) != None:
-                    # print("{}\t<= Completed IPT_12months =>\t{}".format(d['DATIM_Disag_Name'],m['MOH_Indicator_Name']))
+                    print("{}\t<= Completed IPT_12months =>\t{}".format(
+                        d['DATIM_Disag_Name'], m['MOH_Indicator_Name']))
                     found = True
                     append_data(temp_dict, m, d, 0)
                     datimydict.remove(datimydict[j])
@@ -556,7 +558,7 @@ def compare_data(mohdict, datimydict):
             else:
                 if (d['DATIM_Indicator_Category'] == 'TX_CURR') and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
                     # <15 M|F 10-14 <1 1-9
-                    if get_regex_value("([<]\d+\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.search(gender, dk0) != None and mageset <= dageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None:
+                    if get_regex_value("([<]\d+\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.search(gender, dk0) != None and dageset <= mageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None:
                         print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(
                             j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
                         found = True
@@ -564,14 +566,56 @@ def compare_data(mohdict, datimydict):
                         datimydict.remove(datimydict[j])
                         break
                     # <15 1-9|<1 unknown sex
-                    elif get_regex_value("([<]\d+\s+(\w+)\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) == None and re.search(gender, dk0) != None and mageset <= dageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None:
-                        # print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(j,d['DATIM_Disag_Name'],i,m['MOH_Indicator_Name']))
+                    elif get_regex_value("([<]\d+\s+(\w+)\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) == None and re.search(gender, dk0) != None and dageset <= mageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None:
+                        print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(
+                            j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
                         found = True
                         append_data(temp_dict, m, d, 0)
                         datimydict.remove(datimydict[j])
                         break
                     # 15+ M|F
-                    elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and mageset <= datim_25_plus and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
+                    elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and re.match(ageset, check_datim_ageset) != None and mageset != datim_25_plus and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
+                        # import pdb
+                        print("Facility:{} - {}=>{}\t<= TX_CURR =>\t{}=>{}".format(
+                            m['facility'], j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
+                        found = True
+                        append_data(temp_dict, m, d, 0)
+                        datimydict.remove(datimydict[j])
+                        # pdb.set_trace()
+                        break
+                    # 25+ M|F
+                    elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and mageset == datim_25_plus and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
+                        print("datim:{} <=>\tmoh:{}".format(d, m))
+                        import pdb
+                        found = True
+                        temp_dict_check_df = pd.DataFrame(temp_dict)
+                        if not temp_dict_check_df.query('"{}" in DATIM_Disag_Name and "{}" in DATIM_Disag_Name'.format([re.match(datimagesetpattern, i['DATIM_Disag_Name']).group() for i in temp_dict if int(re.match(datimagesetpattern, i['DATIM_Disag_Name']).group().split('-')[1] >= 25)][0], gender)).empty:
+                            temp_dict = [(i['datim_data']+d['datim_data']) for i in temp_dict if int(
+                                re.match(datimagesetpattern, i['DATIM_Disag_Name']).group().split('-')[1] >= 25)]
+                        else:
+                            append_data(temp_dict, m, d, 0)
+                            datimydict.remove(datimydict[j])
+                        pdb.set_trace()
+                        break
+                elif (d['DATIM_Indicator_Category'] == 'TX_NEW') and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
+                    # <15 M|F 10-14 <1 1-9
+                    if get_regex_value("([<]\d+\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.search(gender, dk0) != None and dageset <= mageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None:
+                        print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(
+                            j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
+                        found = True
+                        append_data(temp_dict, m, d, 0)
+                        datimydict.remove(datimydict[j])
+                        break
+                    # <15 1-9|<1 unknown sex
+                    elif get_regex_value("([<]\d+\s+(\w+)\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) == None and re.search(gender, dk0) != None and dageset <= mageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None:
+                        print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(
+                            j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
+                        found = True
+                        append_data(temp_dict, m, d, 0)
+                        datimydict.remove(datimydict[j])
+                        break
+                    # 15+ M|F
+                    elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and re.match(ageset, check_datim_ageset) != None and mageset != datim_25_plus and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
                         print("Facility:{} - {}=>{}\t<= TX_CURR =>\t{}=>{}".format(
                             m['facility'], j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
                         found = True
@@ -579,17 +623,25 @@ def compare_data(mohdict, datimydict):
                         datimydict.remove(datimydict[j])
                         break
                     # 25+ M|F
-                    elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and re.match(ageset, check_datim_ageset) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
-                        print("Facility:{} - {}=>{}\t<= TX_CURR =>\t{}=>{}".format(
-                            m['facility'], j, d['DATIM_Disag_Name'], i, m['MOH_Indicator_Name']))
+                    elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and mageset == datim_25_plus and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
+                        print("datim:{} <=>\tmoh:{}".format(d, m))
                         found = True
-                        append_data(temp_dict, m, d, 0)
-                        datimydict.remove(datimydict[j])
+                        temp_dict_check_df = pd.DataFrame(temp_dict)
+                        if temp_dict_check_df.query('DATIM_Disag_ID == "{}"'.format(d['DATIM_Disag_ID'])) != None:
+                            for item in temp_dict:
+                                if item['DATIM_Disag_ID'] == d['DATIM_Disag_ID'] and item['DATIM_Disag_Name'] == d['DATIM_Disag_Name']:
+                                    temp_dict['datim_data'] = temp_dict['datim_data'] + \
+                                        d['datim_data']
+                                    break
+                        else:
+                            append_data(temp_dict, m, d, 0)
+                            datimydict.remove(datimydict[j])
                         break
                 elif (d['DATIM_Indicator_Category'] == 'HTS_TST') and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
                     # <15 Positive M|F
                     if get_regex_value("((Positive)\s+[<](\d+)\s+(\w+))", dk0) != None and re.search("Positive", dk0) != None and re.search(gender, dk0) != None and mageset <= dageset and re.match(ageset, check_datim_ageset) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
-                        # print("{}\t<= positive to positive mapping ageles =>\t{}".format(d['DATIM_Disag_Name'],m['MOH_Indicator_Name']))
+                        print("{}\t<= positive to positive mapping ageles =>\t{}".format(
+                            d['DATIM_Disag_Name'], m['MOH_Indicator_Name']))
                         found = True
                         append_data(temp_dict, m, d, 0)
                         datimydict.remove(datimydict[j])
@@ -696,28 +748,6 @@ def compare_data(mohdict, datimydict):
                         append_data(temp_dict, m, d, 0)
                         datimydict.remove(datimydict[j])
                         break
-                elif (d['DATIM_Indicator_Category'] == 'TX_NEW') and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
-                    # <15 M|F 1-9 <1 10-14
-                    if get_regex_value("([<]\d+\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.search(gender, dk0) != None and mageset <= dageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
-                        # print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(j,d['DATIM_Disag_Name'],i,m['MOH_Indicator_Name']))
-                        found = True
-                        append_data(temp_dict, m, d, 0)
-                        datimydict.remove(datimydict[j])
-                        break
-                    # <15 1-9|<1 unknown sex
-                    elif get_regex_value("([<]\d+\s+(\w+)\s+(\w+))", dk0) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) == None and re.search(gender, dk0) != None and mageset <= dageset and re.match(ageset, check_datim_ageset) != None and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
-                        # print("{}=>{}\t<= TX_CURR =>\t{}=>{}".format(j,d['DATIM_Disag_Name'],i,m['MOH_Indicator_Name']))
-                        found = True
-                        append_data(temp_dict, m, d, 0)
-                        datimydict.remove(datimydict[j])
-                        break
-                    # 15+ M|F
-                    elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and re.match(ageset, check_datim_ageset) != None and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
-                        # print("Facility:{} - {}=>{}\t<= TX_CURR =>\t{}=>{}".format(m['facility'],j,d['DATIM_Disag_Name'],i,m['MOH_Indicator_Name']))
-                        found = True
-                        append_data(temp_dict, m, d, 0)
-                        datimydict.remove(datimydict[j])
-                        break
         if found:
             continue
     # print(temp_dict)
@@ -753,6 +783,7 @@ def generate_comparison_file(request, use_api_data, category, county, from_date,
         # Filter data between two dates
         moh_df = moh_df.loc[(moh_df['created'] >= str(
             from_date)) & (moh_df['created'] <= str(to_date))]
+        moh_df.iloc[:datim_df.shape[0]]
         print(moh_df.info())
         mohdict = moh_df.to_dict(orient='records')
     if len(mohdict) == 0:
