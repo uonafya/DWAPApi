@@ -106,7 +106,7 @@ if DEVELOPMENT_MODE is True:
             'HOST': 'localhost',
             'USER': 'root',
             'PASSWORD': 'root',
-            'PORT': '3307'
+            'PORT': '3306'
         }
     }
 elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':

@@ -1,5 +1,5 @@
-akismet==1.2.1
-amqp==5.1.1
+akismet
+amqp
 APScheduler==3.9.1
 argcomplete==2.0.0
 argon2-cffi==21.3.0
@@ -9,8 +9,8 @@ asttokens==2.0.8
 attrs==22.1.0
 autopep8==1.6.0
 backcall==0.2.0
-backports.entry-points-selectable==1.1.1
-backports.zoneinfo==0.2.1
+# backports.entry-points-selectable
+# backports.zoneinfo
 bcrypt==3.2.0
 beautifulsoup4==4.11.1
 billiard==3.6.4.0
@@ -62,8 +62,8 @@ django-tinymce==3.4.0
 django-tinymce4-lite==1.8.0
 django-user-accounts==3.2.0
 djangorestframework==3.12.4
-djangorestframework-jwt==1.11.0
-djangorestframework-simplejwt==4.8.0
+djangorestframework-jwt
+djangorestframework-simplejwt
 djoser==2.1.0
 drf-spectacular==0.17.2
 email-reply-parser==0.5.12
@@ -79,11 +79,11 @@ ghp-import==2.0.2
 gunicorn==20.1.0
 idna==3.3
 IMAPClient==2.2.0
-importlib-metadata==1.7.0
-importlib-resources==5.7.1
+importlib-metadata
+importlib-resources
 inflection==0.5.1
-ipykernel==6.6.0
-ipython==7.30.1
+ipykernel
+ipython
 ipython-genutils==0.2.0
 ipywidgets==7.6.5
 itypes==1.2.0
@@ -112,7 +112,7 @@ nest-asyncio==1.5.4
 #numpy==1.21.4
 oauthlib==3.2.0
 packaging==21.3
-pandas==1.1.5
+pandas
 pandocfilters==1.5.0
 paramiko==2.8.0
 parso==0.8.3
@@ -129,7 +129,7 @@ ply==3.11
 prometheus-client==0.14.1
 prompt-toolkit==3.0.30
 protobuf==3.20.1
-psutil==5.9.1
+psutil
 # psycopg==3.0.14
 # psycopg2==2.9.2
 # psycopg2-binary==2.9.3
@@ -140,7 +140,7 @@ pycodestyle==2.8.0
 pycparser==2.21
 pycryptodomex==3.11.0
 Pygments==2.10.0
-PyJWT==2.4.0
+PyJWT
 pyparsing==3.0.6
 pyrsistent==0.18.0
 pysmi==0.3.4
@@ -154,10 +154,10 @@ python3-openid==3.2.0
 PythonTurtle==0.3.2
 pytz==2022.1
 pytz-deprecation-shim==0.1.0.post0
-pywinpty==1.1.6
-PyYAML==5.4.1
+#pywinpty==1.1.6
+PyYAML
 pyyaml_env_tag==0.1
-pyzmq==22.3.0
+#pyzmq==22.3.0
 qtconsole==5.2.1
 QtPy==1.11.3
 requests==2.27.1

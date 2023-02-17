@@ -36,7 +36,7 @@ urlpatterns = [
          name='sync_data'),
     path('total_count/', total_count,
          name='total_count'),
-    path('map_data/<str:category>/<date:from_date>/<date:to_date>/<int:limit>/', map_data,
+    path('map_data/<str:county>/<str:category>/<date:from_date>/<date:to_date>/<int:limit>/', map_data,
          name='map_data'),
     path('generate_comparison_file/<str:use_api_data>/<str:county>/<str:category>/<date:from_date>/<date:to_date>/',
          generate_comparison_file, name='generate_comparison_file'),

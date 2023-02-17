@@ -22,55 +22,11 @@ from datetime import timedelta
 from django.utils import timezone
 from django.db.models import Q
 from .models import *
-
-
-def load_mfl_csv():
-    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
-
-    # print(MEDIA_ROOT)
-    folder_path1 = MEDIA_ROOT
-    res1 = []
-    for path1 in os.listdir(folder_path1):
-        if os.path.isfile(os.path.join(folder_path1, path1)):
-            res1.append(path1)
-    print(res1)
-    mflfile = os.path.join(
-        folder_path1, [i for i in res1 if re.search('mfl', str(i).lower()) != None][0])
-    mfl_df = pd.read_csv(mflfile)
-    return mfl_df
-
-
-def get_datim_NaN_Values():
-    datim_df = load_datim_csv()
-    NaN_Values_df = datim_df[datim_df['DATIM_Disag_ID'].isnull()]
-    return NaN_Values_df
+from datetime import datetime
 
 
 def ABSOLUTE_PATH():
     return Path(__file__).resolve().parent.parent
-
-
-def load_mapping_csv(category, qouter):
-    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
-    # print(MEDIA_ROOT)
-    folder_path = MEDIA_ROOT
-    res = []
-    for path in os.listdir(folder_path):
-        if os.path.isfile(os.path.join(folder_path, path)):
-            res.append(path)
-    print(res)
-    mapping = os.path.join(
-        folder_path,  [i for i in res if re.search('indicatorMapping', i) != None][0])
-    # print(datimfile)
-    mapping_df = pd.read_csv(
-        mapping, usecols=['DATIM_Indicator_Category', 'DATIM_Indicator_ID', 'DATIM_Disag_ID', 'Operation', 'Disaggregation Type'])
-    if str(category).lower() != "all":
-        mapping_df = mapping_df.query(
-            'DATIM_Indicator_Category == "{}"'.format(category))
-    else:
-        pass
-    mapping_df.drop_duplicates(inplace=True)
-    return mapping_df
 
 
 def load_datim_csv(category, county, fromdate):
@@ -83,21 +39,26 @@ def load_datim_csv(category, county, fromdate):
             res.append(path)
     print(res)
     try:
-        datimfile = os.path.join(
-            folder_path,  [i for i in res if re.search(str(category).lower(), str(i).lower()) != None][0])
+        if str(county).lower() != 'all' and str(category) != 'all':
+            datimfile = os.path.join(
+                folder_path,  [i for i in res if re.search(str(category).lower(), str(i).lower()) != None][0])
+        else:
+            datimfile = os.path.join(
+                folder_path,  [i for i in res if re.search("tx_curr", str(i).lower()) != None][0])
     except Exception as e:
         datimfile = ''
         print(e)
+    #import pdb
     if datimfile != '':
-        year = int(datetime.now().year)
+        year = int(datetime.now().year)-1
         cols = ["orgunitlevel2", "orgunitlevel2", "orgunitlevel3", "orgunitlevel4", "orgunitlevel5", "organisationunitid",
                 "dataid", "dataname", "Oct to Dec {}".format(year-1), "Jan to Mar {}".format(year), "Apr to Jun {}".format(year)]
         datim_df = pd.read_csv(datimfile, usecols=cols)
-        print(datim_df)
+        # print(datim_df)
         datim_df.insert(0, 'DATIM_Indicator_Category', str(
             (str(category).upper()+',')*datim_df.shape[0]).split(",")[:-1], True)
         # add created date filter fo tx_curr
-        year = int(datetime.now().year)
+        year = int(datetime.now().year)-1
         if str(fromdate) == '{}-10-01'.format(year-1):
             datim_df.drop(columns=["Jan to Mar {}".format(
                 year), "Apr to Jun {}".format(year)], inplace=True)
@@ -142,13 +103,34 @@ def load_datim_csv(category, county, fromdate):
         datim_df.drop_duplicates(inplace=True)
     else:
         return pd.DataFrame([])
+    # pdb.set_trace()
+    # print(datim_df)
     return datim_df
+
+
+def get_datim_non_null_values(category, county, fromdate):
+    try:
+        datim_df = load_datim_csv(category, county, fromdate)
+    except Exception as e:
+        datim_df = pd.DataFrame()
+        print(e)
+    if not datim_df.empty:
+        datim_df = datim_df[~datim_df['DATIM_Disag_ID'].isnull()]
+        datim_df['datim_data'].fillna(0, inplace=True)  # Fill NaN values
+        datim_df['datim_data'] = datim_df['datim_data'].astype(int)
+        datim_df.drop_duplicates(inplace=True)
+        datim_df = datim_df[datim_df.datim_data != 0]
+        # print(datim_df.head(1))
+    else:
+        return pd.DataFrame([])
+    return datim_df.iloc[:1000]
 
 
 def load_moh_csv(county):
     MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
 
     # print(MEDIA_ROOT)
+    #import pdb
     folder_path1 = MEDIA_ROOT
     res1 = []
     for path1 in os.listdir(folder_path1):
@@ -167,28 +149,13 @@ def load_moh_csv(county):
     else:
         pass
     moh_df.drop_duplicates(inplace=True)
+    # pdb.set_trace()
+    # print(moh_df)
     return moh_df
 
 
-def get_datim_non_null_values(category, county, fromdate):
-    try:
-        datim_df = load_datim_csv(category, county, fromdate)
-    except Exception as e:
-        datim_df = pd.DataFrame()
-        print(e)
-    if not datim_df.empty:
-        datim_df = datim_df[~datim_df['DATIM_Disag_ID'].isnull()]
-        datim_df['datim_data'].fillna(0, inplace=True)  # Fill NaN values
-        datim_df['datim_data'] = datim_df['datim_data'].astype(int)
-        datim_df.drop_duplicates(inplace=True)
-        datim_df = datim_df[datim_df.datim_data != 0]
-        print(datim_df.head(1))
-    else:
-        return pd.DataFrame([])
-    return datim_df.iloc[:1000]
-
-
 def get_moh_non_null_values(county):
+    #import pdb
     moh_df = load_moh_csv(county)
     moh_df = moh_df[~moh_df['MOH_Indicator_ID'].isnull()]
     moh_df['khis_data'].fillna(0, inplace=True)  # Fill NaN values
@@ -201,8 +168,54 @@ def get_moh_non_null_values(county):
         (',')*moh_df.shape[0]).split(",")[:-1], True)
     for i, dt in moh_df.Period.items():
         moh_df['created'][i] = "{}-{}-01".format(dt[:-2], dt[-2:])
-    print(moh_df.head(1))
+    # print(moh_df.head(1))
+    # pdb.set_trace()
     return moh_df.iloc[:2000]
+
+
+def get_datim_NaN_Values():
+    datim_df = load_datim_csv()
+    NaN_Values_df = datim_df[datim_df['DATIM_Disag_ID'].isnull()]
+    return NaN_Values_df
+
+
+def load_mfl_csv():
+    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
+
+    # print(MEDIA_ROOT)
+    folder_path1 = MEDIA_ROOT
+    res1 = []
+    for path1 in os.listdir(folder_path1):
+        if os.path.isfile(os.path.join(folder_path1, path1)):
+            res1.append(path1)
+    print(res1)
+    mflfile = os.path.join(
+        folder_path1, [i for i in res1 if re.search('mfl', str(i).lower()) != None][0])
+    mfl_df = pd.read_csv(mflfile)
+    return mfl_df
+
+
+def load_mapping_csv(category, qouter=""):
+    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
+    # print(MEDIA_ROOT)
+    folder_path = MEDIA_ROOT
+    res = []
+    for path in os.listdir(folder_path):
+        if os.path.isfile(os.path.join(folder_path, path)):
+            res.append(path)
+    print(res)
+    mapping = os.path.join(
+        folder_path,  [i for i in res if re.search('indicatorMapping', i) != None][0])
+    # print(datimfile)
+    mapping_df = pd.read_csv(
+        mapping, usecols=['DATIM_Indicator_Category', 'DATIM_Indicator_ID', 'DATIM_Disag_ID', 'Operation', 'Disaggregation Type'])
+    if str(category).lower() != "all":
+        mapping_df = mapping_df.query(
+            'DATIM_Indicator_Category == "{}"'.format(category))
+    else:
+        pass
+    mapping_df.drop_duplicates(inplace=True)
+    return mapping_df
 
 
 def append_data(mydict, m, d, check=1):
@@ -240,29 +253,33 @@ def get_regex_value(pattern, s):
         x = re.search(pattern, s).group()
         return x
     except Exception as e:
-        pass
+        print(e)
 
 
 @api_view()
 def load_filter_data(request):
     mapping_df = load_mapping_csv("all", "all")
-    datim_df = get_datim_non_null_values("all", "all")
+    # print(mapping_df)
+    datim_df = get_datim_non_null_values("all", "all", "2022-10-01")
+    print(datim_df)
     for item in mapping_df.DATIM_Indicator_Category.unique():
         cats, created = indicator_category.objects.get_or_create(
             category_name=item)
     for item in datim_df.county.unique():
         countie, created = counties.objects.get_or_create(county_name=item)
+    return Response({"Operation succeeded...Counties and Indicator Categories in dataset loaded successfully!"})
 
 
 @api_view()
-def map_data(request, county, category):
-    datim_df = get_datim_non_null_values(category, county)
+def map_data(request, county, category, from_date, to_date, limit):
+    datim_df = get_datim_non_null_values(category, county, from_date)
     datimdict = datim_df.to_dict(orient='records')
     moh_df = get_moh_non_null_values(county)
     mohdict = []
     moh_csv_dict = moh_df.to_dict(orient='records')
     gender = ''
     dageset = 0
+    datimageset = ''
     ageset = ''
     mageset = 0
     found = False
@@ -271,14 +288,14 @@ def map_data(request, county, category):
     # try:
     #     for item in moh_csv_dict:
     #         mohdata, created = indicators.objects.get_or_create(facility=item['facility'], ward=item['ward'], subcounty=item['subcounty'], county=item[
-    #                                                             'county'],    MOH_UID=item['MOH_UID'], MOH_Indicator_ID=item['MOH_Indicator_ID'], MOH_Indicator_Name=item['MOH_Indicator_Name'],lastUpdated=timezone.now(),created=timezone.now(), khis_data=item['khis_data'])
+    #                                                             'county'],    MOH_UID=item['MOH_UID'], MOH_Indicator_ID=item['MOH_Indicator_ID'], MOH_Indicator_Name=item['MOH_Indicator_Name'], lastUpdated=timezone.now(), created=timezone.now(), khis_data=item['khis_data'])
     #     print(mohdata[0])
     # except Exception as e:
     #     print(e)
     objects = indicators.objects.filter(
         Q(MOH_Indicator_Name__icontains='MOH 731')).order_by('-created')
     mohdict = list(objects.values())
-    print(mohdict[0])
+    # print(mohdict[0])
     # try:
     for i, m in enumerate(mohdict):
         for j, d in enumerate(datimdict):
@@ -289,6 +306,34 @@ def map_data(request, county, category):
             # DATIM ageset
             pattern = "(\d+)"
             dageset = int(get_regex_value(pattern, dk0))
+            if datimageset != None or '':
+                check_datim_ageset = ""
+                if re.search("[-]", datimageset) != None:
+                    dageset = int(datimageset.split('-')[1])
+                elif re.search("[+]", datimageset) != None:
+                    dageset = int(datimageset.strip("+"))
+                else:
+                    dageset = int(datimageset.strip('<'))
+                # map to <15
+                if dageset == 1:
+                    dk0 = dk0.replace(datimageset, "<15")
+                    check_datim_ageset = "<1"
+                elif dageset > 1 and dageset <= 9:
+                    dk0 = dk0.replace(datimageset, "<15")
+                    check_datim_ageset = "1-9"
+                elif dageset > 9 and dageset <= 14:  # <15
+                    dk0 = dk0.replace(datimageset, "<15")
+                    check_datim_ageset = "10-14"
+                # map to 15+
+                if dageset > 15 and dageset <= 19:  # 15+
+                    dk0 = dk0.replace(datimageset, "15+")
+                    check_datim_ageset = "15-19"
+                elif dageset > 19 and dageset <= 24:  # 15+
+                    dk0 = dk0.replace(datimageset, "15+")
+                    check_datim_ageset = "20-24"
+                if dageset >= 25:  # 15+
+                    dk0 = dk0.replace(datimageset, "15+")
+                    datim_25_plus = 25
             # print(dageset)
             # MOH ageset
             pattern = r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})"
@@ -465,7 +510,7 @@ def map_data(request, county, category):
             j['DATIM_Indicator_Category']), DATIM_Indicator_ID=str(j['DATIM_Indicator_ID']), DATIM_Disag_ID=str(j['DATIM_Disag_ID']), DATIM_Disag_Name=str(j['DATIM_Disag_Name']), Operation=str(j['Operation']), MOH_Indicator_Name=str(j['MOH_Indicator_Name']), MOH_Indicator_ID=str(j['MOH_Indicator_ID']), Disaggregation_Type=str(j['Disaggregation Type']))
         print(final_data)
     temp_df.to_csv(os.path.join(os.path.join(ABSOLUTE_PATH(), 'media\\final_mapped'),
-                                'Final_Datim_Mapped_Csv_File.csv'), index=False)
+                                'Final_Datim_Mapped_Csv_File'+str(datetime.now().minute)+".csv"), index=False)
     return Response({"Success": "Data Mapping completed successfully!"})
     # except Exception as e:
     #     print("mapping error:{}".format(e))
@@ -759,6 +804,7 @@ def compare_data(mohdict, datimydict):
 @ api_view()
 def generate_comparison_file(request, use_api_data, category, county, from_date, to_date):
     # try:
+    import pdb
     datim_df = get_datim_non_null_values(category, county, from_date)
     if datim_df.empty:
         return Response({"message": "Could not find datim file for the selected indicator!\nPlease upload the file under the \'Uploads Files\' tab"})
@@ -786,6 +832,7 @@ def generate_comparison_file(request, use_api_data, category, county, from_date,
         moh_df.iloc[:datim_df.shape[0]]
         print(moh_df.info())
         mohdict = moh_df.to_dict(orient='records')
+        pdb.set_trace()
     if len(mohdict) == 0:
         return Response({"message": "Could not find data to process!"})
     if len(datimdict) == 0:
