@@ -631,16 +631,16 @@ def compare_data(mohdict, datimydict):
                     # 25+ M|F
                     elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and mageset == datim_25_plus and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
                         print("datim:{} <=>\tmoh:{}".format(d, m))
-                        import pdb
+                        #import pdb
                         found = True
-                        temp_dict_check_df = pd.DataFrame(temp_dict)
-                        if not temp_dict_check_df.query('"{}" in DATIM_Disag_Name and "{}" in DATIM_Disag_Name'.format([re.match(datimagesetpattern, i['DATIM_Disag_Name']).group() for i in temp_dict if int(re.match(datimagesetpattern, i['DATIM_Disag_Name']).group().split('-')[1] >= 25)][0], gender)).empty:
-                            temp_dict = [(i['datim_data']+d['datim_data']) for i in temp_dict if int(
-                                re.match(datimagesetpattern, i['DATIM_Disag_Name']).group().split('-')[1] >= 25)]
-                        else:
-                            append_data(temp_dict, m, d, 0)
-                            datimydict.remove(datimydict[j])
-                        pdb.set_trace()
+                        # temp_dict_check_df = pd.DataFrame(temp_dict)
+                        # if not temp_dict_check_df.query('"{}" in DATIM_Disag_Name and "{}" in DATIM_Disag_Name'.format([re.match(datimagesetpattern, i['DATIM_Disag_Name']).group() for i in temp_dict if int(re.match(datimagesetpattern, i['DATIM_Disag_Name']).group().split('-')[1] >= 25)][0], gender)).empty:
+                        #     temp_dict = [(i['datim_data']+d['datim_data']) for i in temp_dict if int(
+                        #         re.match(datimagesetpattern, i['DATIM_Disag_Name']).group().split('-')[1] >= 25)]
+                        # else:
+                        append_data(temp_dict, m, d, 0)
+                        datimydict.remove(datimydict[j])
+                        # pdb.set_trace()
                         break
                 elif (d['DATIM_Indicator_Category'] == 'TX_NEW') and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
                     # <15 M|F 10-14 <1 1-9
@@ -671,16 +671,16 @@ def compare_data(mohdict, datimydict):
                     elif get_regex_value("(\d+[+]\s+(\w+))", dk0) != None and re.search(gender, dk0) != None and dageset >= mageset and mageset == datim_25_plus and re.search("[r'(']["+gender[:1]+"][r')']", mk0) != None and re.match(mfacility, dfacility) != None:
                         print("datim:{} <=>\tmoh:{}".format(d, m))
                         found = True
-                        temp_dict_check_df = pd.DataFrame(temp_dict)
-                        if temp_dict_check_df.query('DATIM_Disag_ID == "{}"'.format(d['DATIM_Disag_ID'])) != None:
-                            for item in temp_dict:
-                                if item['DATIM_Disag_ID'] == d['DATIM_Disag_ID'] and item['DATIM_Disag_Name'] == d['DATIM_Disag_Name']:
-                                    temp_dict['datim_data'] = temp_dict['datim_data'] + \
-                                        d['datim_data']
-                                    break
-                        else:
-                            append_data(temp_dict, m, d, 0)
-                            datimydict.remove(datimydict[j])
+                        # temp_dict_check_df = pd.DataFrame(temp_dict)
+                        # if temp_dict_check_df.query('DATIM_Disag_ID == "{}"'.format(d['DATIM_Disag_ID'])) != None:
+                        #     for item in temp_dict:
+                        #         if item['DATIM_Disag_ID'] == d['DATIM_Disag_ID'] and item['DATIM_Disag_Name'] == d['DATIM_Disag_Name']:
+                        #             temp_dict['datim_data'] = temp_dict['datim_data'] + \
+                        #                 d['datim_data']
+                        #             break
+                        # else:
+                        append_data(temp_dict, m, d, 0)
+                        datimydict.remove(datimydict[j])
                         break
                 elif (d['DATIM_Indicator_Category'] == 'HTS_TST') and re.match(mfacility, dfacility) != None and re.match(m['ward'], d['ward']) != None:
                     # <15 Positive M|F
@@ -804,7 +804,7 @@ def compare_data(mohdict, datimydict):
 @ api_view()
 def generate_comparison_file(request, use_api_data, category, county, from_date, to_date):
     # try:
-    import pdb
+    #import pdb
     datim_df = get_datim_non_null_values(category, county, from_date)
     if datim_df.empty:
         return Response({"message": "Could not find datim file for the selected indicator!\nPlease upload the file under the \'Uploads Files\' tab"})
@@ -832,7 +832,7 @@ def generate_comparison_file(request, use_api_data, category, county, from_date,
         moh_df.iloc[:datim_df.shape[0]]
         print(moh_df.info())
         mohdict = moh_df.to_dict(orient='records')
-        pdb.set_trace()
+        # pdb.set_trace()
     if len(mohdict) == 0:
         return Response({"message": "Could not find data to process!"})
     if len(datimdict) == 0:
