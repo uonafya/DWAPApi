@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
+    'authman',
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
@@ -59,6 +60,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTH_USER_MODEL = 'authman.MyUser'
 ROOT_URLCONF = 'middlewareapi.urls'
 
 TEMPLATES = [
@@ -76,6 +78,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = (
