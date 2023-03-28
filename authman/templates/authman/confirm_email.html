@@ -1,0 +1,7 @@
+Hi {{ user.username }},
+
+Please click the link below to confirm your registration
+{{ request.scheme }}://{{ request.get_host }}{% url 'email_confirm' uidb64=uid token=token %}
+
+If you did not request this confirmation, please ignore this email.
+

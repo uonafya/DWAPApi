@@ -1,0 +1,2 @@
+created,facility,ward,subcounty,county,MOH_FacilityID,MOH_IndicatorCode,DATIM_Disag_ID,category,MOH_Indicator_Name,DATIM_Disag_Name,khis_data,datim_data,weight,concodance(%),khis_minus_datim
+2021-12-01,Muhuru Sub-County Hospital,Muhuru Ward,Nyatike Sub County,Migori County,cLo2mMOlSkq,GSEmLUnrvzj,Hyvw9VnZ2ch.AG0milXShQM,TX_CURR,MOH 731 On ART_10-14 (F) HV03-031,"TX_CURR (N, DSD, Age/Sex/HIVStatus): Receiving ART 10-14, Female, Positive",21,10,1.0,64.51612903225806,11

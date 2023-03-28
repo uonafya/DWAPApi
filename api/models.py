@@ -114,16 +114,9 @@ class middleware_settings(models.Model):
 
 
 class schedule_settings(models.Model):
-    sync_time = models.TimeField()
+    sync_time = models.DateTimeField()
     shedule_description = models.CharField(
         default="Weekely  data sync", max_length=255, blank=True, null=True)
-    sync_m = models.IntegerField(default=0)
-    sync_t = models.IntegerField(default=0)
-    sync_w = models.IntegerField(default=0)
-    sync_th = models.IntegerField(default=0)
-    sync_f = models.IntegerField(default=0)
-    sync_s = models.IntegerField(default=0)
-    sync_su = models.IntegerField(default=0)
 
     def __str__(self):
         return "Schedule Settings"
@@ -185,7 +178,7 @@ class mapped_data(models.Model):
 
 
 class final_comparison_data(models.Model):
-    created = models.DateField(blank=True, null=True)
+    create_date = models.DateField(blank=True, null=True)
     facility = models.CharField(
         max_length=500, blank=True, null=True)
     ward = models.CharField(

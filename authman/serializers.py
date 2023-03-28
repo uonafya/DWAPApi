@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('groups', 'first_name', 'last_name',
-                  'username', 'email', 'phone', 'password')
+                  'username', 'email', 'phone', 'organisation', 'password')
 
     def test_thread(selft):
         print("sending email...")
@@ -33,16 +33,28 @@ class UserSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name'],
             email=validated_data['email'],
             phone=validated_data['phone'],
+            organisation=validated_data['organisation'],
             username=validated_data['username'])
         selectedroles = validated_data['groups']
         user.set_password(validated_data['password'])
         user.is_staff = False
+        user.save()
+        try:
+            Group.objects.get_or_create(name='visitor')
+            group = Group.objects.get(name='visitor')
+            print(group.id)
+            RoleScreens.objects.get_or_create(
+                role_id=group, screens="Dashboard")
+        except Exception as e:
+            print(e)
+        user.groups.add(group)
         user.save()
         if selectedroles:
             roles = Group.objects.filter(name__in=selectedroles)
             for role in roles:
                 user.groups.add(role)
             user.save()
+        Token.objects.create(user=user)
         # Send confirmation email
         config = EmailConfig.objects.first()
         print(config)
@@ -50,7 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
         subject = 'Confirm your registration'
-        message = render_to_string('authmanagement/confirm_email.html', {
+        message = render_to_string('authman/confirm_email.html', {
             'user': user,
             'uid': uid,
             'token': token,
@@ -69,5 +81,10 @@ class UserSerializer(serializers.ModelSerializer):
             print("Email sent!")
         except Exception as e:
             print("send mail error:{}".format(e))
-        Token.objects.create(user=user)
         return user
+
+
+class RolesScreensSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoleScreens
+        fields = ('role_id', 'screens')

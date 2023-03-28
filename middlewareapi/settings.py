@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY", "6w9z$C&Fp3s6v9y$VkYp2s5vdRgUkXn2J@NcRfUj&E)H@McQy/B?E(H+5u8x/A?DnZr4u7x!TjWmZq4t")
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = True
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
 #ALLOWED_HOSTS = ['support.tdbsoft.co.ke', 'localhost', '127.0.0.1']
@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'mapping_rules',
+    'notifications',
 ]
 
 MIDDLEWARE = [

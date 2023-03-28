@@ -48,12 +48,15 @@ class MyUser(AbstractUser):
         unique=True,
     )
     phone = models.CharField(max_length=15)
+    organisation = models.CharField(
+        max_length=255, default='HealthIT', blank=True, null=True)
     is_active = models.BooleanField(default=False)
 
     # objects = MyUserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['phone', 'first_name', 'last_name', 'email']
+    REQUIRED_FIELDS = ['phone', 'first_name',
+                       'last_name', 'email']
 
     def __str__(self):
         return self.email

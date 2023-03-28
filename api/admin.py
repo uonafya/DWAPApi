@@ -24,7 +24,7 @@ class MappingAdmin(admin.ModelAdmin):
 class ComparisonAdmin(admin.ModelAdmin):
     search_fields = ('facility', 'ward', 'subcounty', 'county',
                      'indicators', 'khis_minus_datim', 'concodance')
-    list_filter = ['created', 'county', 'facility', 'ward',
+    list_filter = ['create_date', 'county', 'facility', 'ward',
                    'subcounty']
     list_display = ['facility', 'ward', 'subcounty', 'county', 'MOH_FacilityID', 'MOH_IndicatorCode', 'DATIM_Disag_Name',
                     'indicators', 'khis_data', 'datim_data', 'weight', 'concodance', 'khis_minus_datim']

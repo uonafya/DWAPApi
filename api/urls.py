@@ -6,7 +6,6 @@ from .data_mapping import *
 register_converter(DateConverter, 'date')
 
 router = DefaultRouter()
-router.register('listschedules', ScheduleViewSet)
 router.register('listfiles', FileUploadViewSet)
 router.register('listindicators', IndicatorViewSet)
 router.register('listindicator_types', IndicatorTypeViewSet)
@@ -19,6 +18,12 @@ urlpatterns = [
     path('create_indicator/', IndicatorCreate.as_view(), name='create_indicator'),
     path('create_indicator_type/',
          IndicatorTypeCreate.as_view(), name='create_indicator_type'),
+    path('listroles/', ScheduleView.as_view(), name='roles'),
+    path('listroles/<int:pk>/',
+         RolesView.as_view(), name='update_roles'),
+    path('listschedules/', RolesView.as_view(), name='schedules'),
+    path('listschedules/<int:pk>/',
+         ScheduleView.as_view(), name='update_schedules'),
     path('create_indicator_group/', IndicatorGroupCreate.as_view(),
          name='create_indicator_group'),
     path('indicators/<int:limit>/', IndicatorList.as_view(),
@@ -35,7 +40,7 @@ urlpatterns = [
          name='total_count'),
     #     path('map_data/<str:county>/<str:category>/<date:from_date>/<date:to_date>/<int:limit>/', map_data,
     #          name='map_data'),
-    path('generate_comparison_file/<str:use_api_data>/<str:county>/<str:category>/<date:from_date>/<date:to_date>/',
+    path('generate_comparison_file/<str:data_source>/<str:county>/<str:category>/<date:from_date>/<date:to_date>/',
          generate_comparison_file, name='generate_comparison_file'),
     path('get_mapped_data', GetMappedFiles.as_view(),
          name='get_mapped_data'),

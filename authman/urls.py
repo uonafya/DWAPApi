@@ -5,7 +5,7 @@ from django.urls import path
 from . views import *
 
 router = DefaultRouter()
-router.register('listusers', UserViewSet)
+# router.register('listusers', UserViewSet)
 
 urlpatterns = [
     path("register/", RegistrationView.as_view(), name="user_create"),
@@ -13,5 +13,8 @@ urlpatterns = [
          EmailConfirmView.as_view(), name='email_confirm'),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogOutView.as_view(), name="logout"),
+    path('listusers/', UserViewSet.as_view(), name='users'),
+    path('listusers/<int:pk>/',
+         UserViewSet.as_view(), name='update_users'),
 ]
 urlpatterns += router.urls
