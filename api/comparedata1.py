@@ -163,20 +163,21 @@ def map_data(mohdict, datimydict):
                 khis_gender = extract_gender_khis(khis_name)
                 # print(khis_name, datim_name)
                 if datim_age in khis_age and datim_gender in khis_gender and find_similar_datim(khis_name, d) != None:
+                    # group and merge all age groups above or below 9
                     if [i for i in ['25+', '1-9'] if i in datim_name]:
                         data_range = 0
                         for element in mapped_list:
                             if datim_name in element['DATIM_Disag_Name']:
                                 data_range = int(
                                     element['khis_data'])-int(element['datim_data'])
-                                if data_range <= 10:
+                                if data_range <= 1 or data_range == 0:
                                     exists = False
                                 else:
                                     element['datim_data'] += int(
                                         d['datim_data'])
                                     mohdict.remove(mohdict[j])
                                     exists = True
-                                    if data_range <= 10:
+                                    if data_range <= 1 or data_range == 0:
                                         next = True
                                     break
                         if not exists:
