@@ -133,7 +133,7 @@ class MisSettingsView(APIView):
             raise Http404
 
     def get(self, request, format=None):
-        recs = MiscSerializer.objects.all()
+        recs = MiscSettings.objects.all()
         serializer = MiscSerializer(
             recs, many=True, context={"request": request})
         return Response(serializer.data)

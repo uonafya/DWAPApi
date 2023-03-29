@@ -23,7 +23,6 @@ class KeyComparisonElements(models.Model):
     age_group = models.BooleanField(default=True)
     gender = models.BooleanField(default=True)
     similar_words = models.BooleanField(default=True)
-    max_similar_words = models.IntegerField(default=10)
     last_updated = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
@@ -52,6 +51,7 @@ class SeriesRegex(models.Model):
 class MiscSettings(models.Model):
     merge_25_plus_ages = models.BooleanField(default=True)
     merge_1_to_9_ages = models.BooleanField(default=True)
+    max_word_similarity = models.IntegerField(default=30)
     last_updated = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
