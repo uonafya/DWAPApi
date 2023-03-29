@@ -20,6 +20,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include("api.urls")),
     path('api/', include("authman.urls")),
+    path('api/', include("mapping_rules.urls")),
+
 ]
 # default: "Django Administration"
 admin.site.site_header = 'Datim - KHIS Data IL Administration'

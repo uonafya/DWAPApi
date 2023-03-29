@@ -22,8 +22,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from rest_framework import status
-from rest_framework.response import Response
 from django.conf import settings
 import re
 from django.core.mail.backends.smtp import EmailBackend

@@ -10,8 +10,6 @@ import pandas as pd
 # from mapping_rules.models import *
 from .dataset_regex import *
 
-data_groups = GruopSeriesData.objects.first()
-
 
 def append_data(mydict, m, d, check=1):
     mydict.append({
@@ -55,38 +53,22 @@ def extract_age_group(element):
 # Define a function to extract gender from khis elements
 
 
-def extract_gender_khis(element):
-    gender = ""
+def extract_gender(element):
     try:
+        gender = re.search(r"\((F|M)\)|(Male|Female)", element).group()
         age_group = re.search(
             r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})", element).group()
         # print(element, gender)
         if age_group in ["<1", "1-9", "1-4", "5-9"]:
             gender = "Unknown Sex"
-        else:
-            gender = re.search(r"\((F|M)\)", element).group(1)
-            if gender == 'F':
-                gender = "Female"
-            elif gender == 'M':
-                gender = "Male"
+        elif gender == 'F':
+            gender = "Female"
+        elif gender == 'M':
+            gender = "Male"
         # print(gender)
         return gender
     except Exception as e:
-        print("khis gender:{}".format(e))
-
-
-def extract_gender_datim(element):
-    try:
-        gender = re.search(r"(Female|Male)", element).group()
-        age_group = re.search(
-            r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})", element).group()
-        # print(element, gender)
-        if age_group in ["<1", "1-9", "1-4", "5-9"]:
-            gender = "Unknown Sex"
-        # print(gender)
-        return gender
-    except Exception as e:
-        print("datim gender:{}".format(e))
+        print("gender:{}".format(e))
 
 # Define a function to find the most similar datim element for a khis element
 
@@ -112,7 +94,6 @@ def find_similar_datim(khis_name, datim_element):
 def group_datim_elem(element):
     age_group = re.search(
         r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})", element).group()
-    gender = re.search(r"(Female|Male)", element).group()
     try:
         if age_group.endswith("+"):
             element = str(element).replace(age_group, "25+")
@@ -154,13 +135,13 @@ def map_data(mohdict, datimydict):
                 d['DATIM_Disag_Name'] = group_datim_elem(d['DATIM_Disag_Name'])
             datim_name = d['DATIM_Disag_Name']
             datim_age = extract_age_group(datim_name)
-            datim_gender = extract_gender_datim(datim_name)
+            datim_gender = extract_gender(datim_name)
             for j, m in enumerate(mohdict):
                 if next:
                     break
                 khis_name = m['MOH_Indicator_Name']
                 khis_age = extract_age_group(khis_name)
-                khis_gender = extract_gender_khis(khis_name)
+                khis_gender = extract_gender(khis_name)
                 # print(khis_name, datim_name)
                 if datim_age in khis_age and datim_gender in khis_gender and find_similar_datim(khis_name, d) != None:
                     # group and merge all age groups above or below 9
