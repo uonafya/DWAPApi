@@ -42,7 +42,7 @@ def load_datim_csv(category, county, fromdate):
     print(date_obj)
 
     MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
-    datast_grouping = GruopSeriesData.objects.get(dataset_name='datim')
+    # datast_grouping = GruopSeriesData.objects.get(dataset_name='datim')
     # print(MEDIA_ROOT)
     folder_path = MEDIA_ROOT
     res = []
@@ -68,7 +68,7 @@ def load_datim_csv(category, county, fromdate):
                 "dataid", "dataname", "Oct to Dec {}".format(year-1), "Jan to Mar {}".format(year), "Apr to Jun {}".format(year)]
         datim_df = pd.read_csv(datimfile, usecols=cols)
         # print(datim_df)
-        datim_df.insert(0, datast_grouping.group_by, str(
+        datim_df.insert(0, 'DATIM_Indicator_Category', str(
             (str(category).upper()+',')*datim_df.shape[0]).split(",")[:-1], True)
         # add created date filter fo tx_curr
         year = int(datetime.now().year)-1
@@ -108,7 +108,7 @@ def load_datim_csv(category, county, fromdate):
         # datim_df = datim_cats
         datim_df.rename(columns={'organisationunitid': 'DATIM_UID', 'orgunitlevel2': 'county',
                         'orgunitlevel3': 'subcounty', 'orgunitlevel4': 'ward', 'orgunitlevel5': 'facility', 'dataid': 'DATIM_Disag_ID', 'dataname': 'DATIM_Disag_Name'}, inplace=True)
-        #datim_df['DATIM_Indicator_Category'] = str(category).upper()
+        # datim_df['DATIM_Indicator_Category'] = str(category).upper()
 
         # print(datim_df)
 
@@ -168,7 +168,7 @@ def load_moh_csv(county):
                            'inndicator': 'MOH_Indicator_Name', 'MOH_IndicatorCode': 'MOH_Indicator_ID'}, inplace=True)
     if str(county).lower() != 'all':
         moh_df = moh_df.query(f'county == "{county}"')
-        #print(moh_df, county)
+        # print(moh_df, county)
     moh_df.drop_duplicates(inplace=True)
     # pdb.set_trace()
     return moh_df
