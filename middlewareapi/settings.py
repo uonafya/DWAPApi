@@ -30,7 +30,7 @@ DEBUG = True
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
 #ALLOWED_HOSTS = ['support.tdbsoft.co.ke', 'localhost', '127.0.0.1']
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS",
-                          "127.0.0.1,localhost").split(",")
+                          "127.0.0.1,localhost,*.vercel.app").split(",")
 
 # Application definition
 
