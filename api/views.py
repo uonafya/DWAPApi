@@ -24,46 +24,6 @@ class IndicatorViewSet(viewsets.ModelViewSet):
 
 
 class ScheduleView(APIView):
-    serializer_class = RolesScreensSerializer
-    permission_classes = [permissions.IsAuthenticated,]
-
-    def get_object(self, pk):
-        try:
-            return RoleScreens.objects.get(pk=pk)
-        except RoleScreens.DoesNotExist:
-            raise Http404
-
-    def get(self, request, format=None):
-        roles = RoleScreens.objects.all().values("role_id", "role_id__name", "screens")
-        context = []
-        for role in roles:
-            print(role)
-            context.append({'id': role["role_id"],
-                            "role_name": role["role_id__name"], "screens": role["screens"]})
-        return Response(context)
-
-    def post(self, request, format=None):
-        serializer = RolesScreensSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk, format=None):
-        roles = self.get_object(pk)
-        serializer = RolesScreensSerializer(roles, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        role = self.get_object(pk)
-        role.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class RolesView(APIView):
     serializer_class = ScheduleSerializer
     permission_classes = [permissions.IsAuthenticated,]
 

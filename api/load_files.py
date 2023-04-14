@@ -142,7 +142,7 @@ def get_datim_non_null_values(category, county, fromdate):
         datim_df = datim_df[datim_df.datim_data != 0]
         # print(datim_df.head(1))
         # print(datim_df)
-        return datim_df.sample(n=2000, replace=True)  # datim_df.iloc[:2000]
+        return datim_df.sample(n=2000, replace=False)  # datim_df.iloc[:2000]
     else:
         return pd.DataFrame([])
 
@@ -191,7 +191,7 @@ def get_moh_non_null_values(county):
     moh_df.drop(columns=["Period"], inplace=True)
     # print(moh_df)
     # pdb.set_trace()
-    return moh_df.sample(n=2000)  # moh_df.iloc[:2000]
+    return moh_df.sample(n=2000, replace=True)  # moh_df.iloc[:2000]
 
 
 # def get_datim_NaN_Values():

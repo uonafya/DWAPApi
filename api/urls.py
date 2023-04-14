@@ -2,7 +2,7 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 from django.urls import path, register_converter
 from .converters import DateConverter
-from .data_mapping import *
+from .generate_records import *
 register_converter(DateConverter, 'date')
 
 router = DefaultRouter()
@@ -18,10 +18,7 @@ urlpatterns = [
     path('create_indicator/', IndicatorCreate.as_view(), name='create_indicator'),
     path('create_indicator_type/',
          IndicatorTypeCreate.as_view(), name='create_indicator_type'),
-    path('listroles/', ScheduleView.as_view(), name='roles'),
-    path('listroles/<int:pk>/',
-         RolesView.as_view(), name='update_roles'),
-    path('listschedules/', RolesView.as_view(), name='schedules'),
+    path('listschedules/', ScheduleView.as_view(), name='schedules'),
     path('listschedules/<int:pk>/',
          ScheduleView.as_view(), name='update_schedules'),
     path('create_indicator_group/', IndicatorGroupCreate.as_view(),

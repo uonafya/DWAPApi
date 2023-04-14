@@ -55,17 +55,19 @@ def extract_age_group(element):
 
 def extract_gender(element):
     try:
-        gender = re.search(r"\((F|M)\)|(Male|Female)", element).group()
         age_group = re.search(
             r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})", element).group()
-        # print(element, gender)
         if age_group in ["<1", "1-9", "1-4", "5-9"]:
             gender = "Unknown Sex"
-        elif gender == 'F':
-            gender = "Female"
-        elif gender == 'M':
-            gender = "Male"
-        # print(gender)
+            return gender
+        else:
+            # check gender
+            gender = re.search(r"\((F|M)\)|(Male|Female)", element).group()
+            if gender == '(F)':
+                gender = "Female"
+            elif gender == '(M)':
+                gender = "Male"
+            # print(gender)
         return gender
     except Exception as e:
         print("gender:{}".format(e))
@@ -142,33 +144,41 @@ def map_data(mohdict, datimydict):
                 khis_name = m['MOH_Indicator_Name']
                 khis_age = extract_age_group(khis_name)
                 khis_gender = extract_gender(khis_name)
-                # print(khis_name, datim_name)
+                # print(datim_gender, khis_gender)
                 if datim_age in khis_age and datim_gender in khis_gender and find_similar_datim(khis_name, d) != None:
+                    data_range = 0
                     # group and merge all age groups above or below 9
                     if [i for i in ['25+', '1-9'] if i in datim_name]:
-                        data_range = 0
                         for element in mapped_list:
                             if datim_name in element['DATIM_Disag_Name']:
                                 data_range = int(
                                     element['khis_data'])-int(element['datim_data'])
-                                if data_range <= 1 or data_range == 0:
+                                if (data_range <= 5) or (data_range == 0):
                                     exists = False
                                 else:
                                     element['datim_data'] += int(
                                         d['datim_data'])
                                     mohdict.remove(mohdict[j])
                                     exists = True
-                                    if data_range <= 1 or data_range == 0:
+                                    data_range = int(
+                                        element['khis_data'])-int(element['datim_data'])
+                                    if (data_range <= 5) or (data_range == 0):
                                         next = True
                                     break
                         if not exists:
                             append_data(mapped_list, m, d)
                             mohdict.remove(mohdict[j])
+                            next = True
                             break
                     else:
-                        append_data(mapped_list, m, d)
-                        mohdict.remove(mohdict[j])
-                        break
+                        data_range = int(
+                            element['khis_data'])-int(element['datim_data'])
+                        if (data_range <= 5) or (data_range == 0):
+                            next = True
+                            append_data(mapped_list, m, d)
+                            mohdict.remove(mohdict[j])
+                            break
+                        next = False
         except Exception as e:
             print("mapping:{}".format(e))
     temp_df = pd.DataFrame(mapped_list)

@@ -24,11 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY", "6w9z$C&Fp3s6v9y$VkYp2s5vdRgUkXn2J@NcRfUj&E)H@McQy/B?E(H+5u8x/A?DnZr4u7x!TjWmZq4t")
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
+# DEBUG = True
 DEBUG = True
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
-#ALLOWED_HOSTS = ['support.tdbsoft.co.ke', 'localhost', '127.0.0.1']
+# ALLOWED_HOSTS = ['support.tdbsoft.co.ke', 'localhost', '127.0.0.1']
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS",
                           "127.0.0.1,localhost,*.vercel.app").split(",")
 

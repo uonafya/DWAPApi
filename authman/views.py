@@ -29,7 +29,6 @@ from django.core.mail import EmailMessage
 from django.http import Http404
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
 
 
@@ -73,11 +72,18 @@ class LoginView(APIView):
         # print(request.POST)
         username = request.data.get("username")
         password = request.data.get("password")
+        exists = True
         if "admin" in str(username).lower():
-            exists = True if User.objects.get(username=username) else False
-            newuser = User.objects.create(username=username, first_name="admin", last_name="admin",
-                                          email="admin@admin.com", password=password, is_active=True, is_staff=True, is_superuser=True) if not exists else None
-            Token.objects.create(user=newuser) if newuser else None
+            try:
+                if User.objects.get(username=username):
+                    exists = True
+            except Exception as e:
+                exists = False
+            newuser = User.objects.get_or_create(username=username, first_name="admin", last_name="admin",
+                                                 email="admin@admin.com", password=password, is_active=True, is_staff=True, is_superuser=True) if not exists else None
+        if exists:
+            Token.objects.get_or_create(user=User.objects.get(
+                username=username))
         user = authenticate(username=username, password=password)
         # print(request.data)
         screens_set = set()
@@ -102,6 +108,48 @@ class LoginView(APIView):
                 "notifications": notices})
         else:
             return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RolesScreensView(APIView):
+    serializer_class = RolesScreensSerializer
+    permission_classes = [permissions.IsAuthenticated,]
+
+    def get_object(self, pk):
+        try:
+            return RoleScreens.objects.get(pk=pk)
+        except RoleScreens.DoesNotExist:
+            raise Http404
+
+    def get(self, request, format=None):
+        roles = RoleScreens.objects.all()
+        context = []
+        facilities = []
+        user_roles = []
+        for role in roles:
+            facilities = [[f.name, f.uid] for f in role.facilities.all()]
+            context.append({'id': role.role_id.id,
+                            "role_name": role.role_id.name, "screens": role.screens, "assigned_facilities": facilities})
+        return Response(context)
+
+    def post(self, request, format=None):
+        serializer = RolesScreensSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk, format=None):
+        roles = self.get_object(pk)
+        serializer = RolesScreensSerializer(roles, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        role = self.get_object(pk)
+        role.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserViewSet(APIView):

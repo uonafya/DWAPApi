@@ -113,6 +113,19 @@ class middleware_settings(models.Model):
         verbose_name_plural = 'Data Sync Settings'
 
 
+class Facilities(models.Model):
+    name = models.CharField(max_length=255, default='Mulele')
+    uid = models.CharField(
+        max_length=255, default='HkslWRBHgWw', primary_key=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'facilities'
+        verbose_name_plural = 'Facilities'
+
+
 class schedule_settings(models.Model):
     sync_time = models.DateTimeField()
     shedule_description = models.CharField(
@@ -210,4 +223,4 @@ class final_comparison_data(models.Model):
 
     class Meta:
         db_table = 'final_comparison_data'
-        verbose_name_plural = 'Fianl Comparison Data'
+        verbose_name_plural = 'Final Comparison Data'

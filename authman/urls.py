@@ -16,5 +16,8 @@ urlpatterns = [
     path('listusers/', UserViewSet.as_view(), name='users'),
     path('listusers/<int:pk>/',
          UserViewSet.as_view(), name='update_users'),
+    path('listroles/', RolesScreensView.as_view(), name='roles'),
+    path('listroles/<int:pk>/',
+         RolesScreensView.as_view(), name='update_roles'),
 ]
 urlpatterns += router.urls

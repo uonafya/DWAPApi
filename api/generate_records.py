@@ -2,7 +2,7 @@ from .load_files import *
 from .models import *
 from datetime import datetime, timedelta, date
 from django.db.models import Q
-from .comparedata1 import *
+from .map_data import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
@@ -26,17 +26,17 @@ def load_filter_data(request):
 def generate_comparison_file(request, data_source, category, county, from_date, to_date):
     # try:
     # import pdb
-    #print(data_source, county)
+    # print(data_source, county)
     datim_df = get_datim_non_null_values(category, county, from_date)
     moh_df = get_moh_non_null_values(county)
-    #print(datim_df['created'].iloc[0], from_date, to_date)
+    # print(datim_df['created'].iloc[0], from_date, to_date)
     if datim_df.empty:
         return Response({"message": "Could not find datim file for the selected indicator!\nPlease upload the file under the \'Uploads Files\' tab"})
     mohdict = {}
     datimdict = {}
     datim_df['created'] = pd.to_datetime(
         datim_df['created'], format='%Y-%m-%d')
-    #print(data_source, datim_df)
+    # print(data_source, datim_df)
     if int(datim_df.created.iloc[0].month) == 10:
         from_date = from_date - timedelta(days=365)
         to_date = to_date - timedelta(days=365)
