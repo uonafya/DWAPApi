@@ -34,18 +34,16 @@ def extract_age_group(element):
         r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})", element).group()
     # print(element, age_group)
     try:
-        if age_group.endswith("+"):
-            age_group = "25+"
-            element = str(element).replace(age_group, "25+")
-        elif "-" in age_group and int(age_group.split("-")[1]) >= 25:
-            age_group = "25+"
-            element = str(element).replace(age_group, "25+")
-            element = str(element).replace(age_group, "25+")
-        elif "-" in age_group and (int(age_group.split("-")[1]) >= 1 and int(age_group.split("-")[1]) <= 9):
-            element = str(element).replace(age_group, "1-9")
-            age_group = "1-9"
-        # print(age_group)
-        # print(element)
+        if 'MOH' not in element:
+            if max_limit(age_group) >= 15:
+                age_group = "15+"
+                element = str(element).replace(age_group, "15+")
+            elif (max_limit(age_group) >= 10) and (max_limit(age_group) <= 14):
+                age_group = "10-14"
+                element = str(element).replace(age_group, "10-14")
+            elif (max_limit(age_group) >= 2) and (max_limit(age_group) <= 9):
+                element = str(element).replace(age_group, "1-9")
+                age_group = "1-9"
         return age_group
     except Exception as e:
         print("age:{}".format(e))
@@ -75,66 +73,50 @@ def extract_gender(element):
 # Define a function to find the most similar datim element for a khis element
 
 
-def find_similar_datim(khis_name, datim_element):
+def similarity(khis_name, datim_name):
     try:
-        max_similarity = 3
-        most_similar_datim = {}
-        similarity = sum([1 for word in str(str(khis_name).split()).replace("_", " ").replace(
-            "(F)", " Female").replace("(M)", " Male")
-            if word.lower() in str(datim_element['DATIM_Disag_Name']).replace(",", "").lower()])
-        if similarity > max_similarity:
-            max_similarity = similarity
-            most_similar_datim = datim_element
-            # print("Most similar=>", khis_name, most_similar_datim)
-        else:
-            most_similar_datim = None
+        max_similarity = 0
+        max_similarity = max_similarity + sum([1 for word in str(khis_name).replace("_", " ").replace(
+            "(F)", " Female").replace("(M)", " Male").split()
+            if word.lower() in str(datim_name).replace(",", "").lower()])
+        return max_similarity
     except Exception as e:
         print(e)
-    return most_similar_datim
+    return max_similarity
 
 
-def group_datim_elem(element):
+def max_limit(age_group):
+    try:
+        end_limit = int(re.findall(r'\d+', age_group)[-1])
+        return end_limit
+    except Exception as e:
+        print(e)
+
+
+def rename_datim(element):
     age_group = re.search(
         r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})", element).group()
     try:
-        if age_group.endswith("+"):
-            element = str(element).replace(age_group, "25+")
-        elif '-' in age_group and int(age_group.split("-")[1]) >= 25:
-            element = str(element).replace(age_group, "25+")
-        elif "-" in age_group and (int(age_group.split("-")[1]) >= 1 and int(age_group.split("-")[1]) <= 9):
-            element = str(element).replace(age_group, "1-9")
-        elif "<" in age_group and int(age_group.split("<")[1]) <= 1:
-            element = str(element).replace(age_group, "<1")
-        # print(element)
+        if ('TX_NEW' or 'TX_CURR') in element:
+            if max_limit(age_group) >= 15:
+                element = str(element).replace(age_group, "15+")
+            elif (max_limit(age_group) >= 10) and (max_limit(age_group) <= 14):
+                element = str(element).replace(age_group, "10-14")
+            elif (max_limit(age_group) >= 2) and (max_limit(age_group) <= 9):
+                element = str(element).replace(age_group, "1-9")
         return element
     except Exception as e:
         print("age:{}".format(e))
 
 
-def merge_grouped_elememts(dict_list, d, datim_name):
-    try:
-        match_found = False
-        for element in dict_list:
-            if element[datim_name] == datim_name and (extract_age_group(datim_name) == '25+' or extract_age_group(datim_name) == '1-9'):
-                element['datim_data'] += int(d['datim_data'])
-                match_found = True
-        print(match_found, element, datim_name)
-        return match_found
-    except Exception as e:
-        print("merge elem:{}".format(e))
-
-
 def map_data(mohdict, datimydict):
     # Map khis elements to datim elements
     mapped_list = []
-    group_datim_elements = True
     for i, d in enumerate(datimydict):
         try:
             next = False
             exists = False
-            # m['name'] = group_elem(m['name'])
-            if group_datim_elements:
-                d['DATIM_Disag_Name'] = group_datim_elem(d['DATIM_Disag_Name'])
+            d['DATIM_Disag_Name'] = rename_datim(d['DATIM_Disag_Name'])
             datim_name = d['DATIM_Disag_Name']
             datim_age = extract_age_group(datim_name)
             datim_gender = extract_gender(datim_name)
@@ -144,41 +126,80 @@ def map_data(mohdict, datimydict):
                 khis_name = m['MOH_Indicator_Name']
                 khis_age = extract_age_group(khis_name)
                 khis_gender = extract_gender(khis_name)
-                # print(datim_gender, khis_gender)
-                if datim_age in khis_age and datim_gender in khis_gender and find_similar_datim(khis_name, d) != None:
+                # print(max_limit(datim_age))
+                # print(max_limit(khis_age))
+                # <15 Unknown gender
+                if (max_limit(datim_age) >= 1 and max_limit(datim_age) <= 9) and (datim_age in khis_age) and (datim_gender in khis_gender):
                     data_range = 0
-                    # group and merge all age groups above or below 9
-                    if [i for i in ['25+', '1-9'] if i in datim_name]:
-                        for element in mapped_list:
-                            if datim_name in element['DATIM_Disag_Name']:
+                    for element in mapped_list:
+                        if datim_name in element['DATIM_Disag_Name']:
+                            data_range = int(
+                                element['khis_data'])-int(element['datim_data'])
+                            if (data_range <= 1) or (data_range == 0):
+                                exists = False
+                            else:
+                                element['datim_data'] += int(
+                                    d['datim_data'])
+                                mohdict.remove(mohdict[j])
+                                exists = True
                                 data_range = int(
                                     element['khis_data'])-int(element['datim_data'])
-                                if (data_range <= 5) or (data_range == 0):
-                                    exists = False
-                                else:
-                                    element['datim_data'] += int(
-                                        d['datim_data'])
-                                    mohdict.remove(mohdict[j])
-                                    exists = True
-                                    data_range = int(
-                                        element['khis_data'])-int(element['datim_data'])
-                                    if (data_range <= 5) or (data_range == 0):
-                                        next = True
-                                    break
-                        if not exists:
-                            append_data(mapped_list, m, d)
-                            mohdict.remove(mohdict[j])
-                            next = True
-                            break
-                    else:
-                        data_range = int(
-                            element['khis_data'])-int(element['datim_data'])
-                        if (data_range <= 5) or (data_range == 0):
-                            next = True
-                            append_data(mapped_list, m, d)
-                            mohdict.remove(mohdict[j])
-                            break
-                        next = False
+                                if (data_range <= 1) or (data_range == 0):
+                                    next = True
+                                break
+                    if not exists:
+                        append_data(mapped_list, m, d)
+                        mohdict.remove(mohdict[j])
+                        next = True
+                        break
+                # <15 M|F 10-14
+                elif ((max_limit(datim_age) >= 10) and (max_limit(datim_age) <= 14)) and (datim_age in khis_age) and (datim_gender in khis_gender):
+                    data_range = 0
+                    for element in mapped_list:
+                        if datim_name in element['DATIM_Disag_Name']:
+                            data_range = int(
+                                element['khis_data'])-int(element['datim_data'])
+                            if (data_range <= 1) or (data_range == 0):
+                                exists = False
+                            else:
+                                element['datim_data'] += int(
+                                    d['datim_data'])
+                                mohdict.remove(mohdict[j])
+                                exists = True
+                                data_range = int(
+                                    element['khis_data'])-int(element['datim_data'])
+                                if (data_range <= 1) or (data_range == 0):
+                                    next = True
+                                break
+                    if not exists:
+                        append_data(mapped_list, m, d)
+                        mohdict.remove(mohdict[j])
+                        next = True
+                        break
+                # <15+ M|F
+                elif (max_limit(datim_age) >= 15) and (max_limit(khis_age) >= 15) and (datim_gender in khis_gender):
+                    data_range = 0
+                    for element in mapped_list:
+                        if datim_name in element['DATIM_Disag_Name']:
+                            data_range = int(
+                                element['khis_data'])-int(element['datim_data'])
+                            if (data_range <= 1) or (data_range == 0):
+                                exists = False
+                            else:
+                                element['datim_data'] += int(
+                                    d['datim_data'])
+                                mohdict.remove(mohdict[j])
+                                exists = True
+                                data_range = int(
+                                    element['khis_data'])-int(element['datim_data'])
+                                if (data_range <= 1) or (data_range == 0):
+                                    next = True
+                                break
+                    if not exists:
+                        append_data(mapped_list, m, d)
+                        mohdict.remove(mohdict[j])
+                        next = True
+                        break
         except Exception as e:
             print("mapping:{}".format(e))
     temp_df = pd.DataFrame(mapped_list)

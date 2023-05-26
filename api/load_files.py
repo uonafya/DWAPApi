@@ -56,7 +56,7 @@ def load_datim_csv(category, county, fromdate):
                 folder_path,  [i for i in res if re.search(str(category).lower(), str(i).lower()) != None][0])
         else:
             datimfile = os.path.join(
-                folder_path,  [i for i in res if re.search(str(category).lower, str(i).lower()) != None][0])
+                folder_path,  [i for i in res if re.search('tx_curr', str(i).lower()) != None][0])
     except Exception as e:
         datimfile = ''
         print(e)
@@ -142,7 +142,8 @@ def get_datim_non_null_values(category, county, fromdate):
         datim_df = datim_df[datim_df.datim_data != 0]
         # print(datim_df.head(1))
         # print(datim_df)
-        return datim_df.sample(n=2000, replace=False)  # datim_df.iloc[:2000]
+        # .sample(n=2000, replace=False)  # datim_df.iloc[:2000]
+        return datim_df
     else:
         return pd.DataFrame([])
 
@@ -158,7 +159,6 @@ def load_moh_csv(county):
     for path1 in os.listdir(folder_path1):
         if os.path.isfile(os.path.join(folder_path1, path1)):
             res1.append(path1)
-    print(res1)
     mohfile = os.path.join(
         folder_path1, [i for i in res1 if re.search('khis', i) != None][0])
     cols = ["MOH_FacilityID", "facility", "ward", "subcounty",
@@ -191,7 +191,7 @@ def get_moh_non_null_values(county):
     moh_df.drop(columns=["Period"], inplace=True)
     # print(moh_df)
     # pdb.set_trace()
-    return moh_df.sample(n=2000, replace=True)  # moh_df.iloc[:2000]
+    return moh_df  # .sample(n=2000, replace=True)  # moh_df.iloc[:2000]
 
 
 # def get_datim_NaN_Values():

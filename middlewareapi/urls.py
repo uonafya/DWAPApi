@@ -24,7 +24,7 @@ urlpatterns = [
 
 ]
 # default: "Django Administration"
-admin.site.site_header = 'Datim - KHIS Data IL Administration'
+admin.site.site_header = 'Data IL Backend Administration'
 # default: "Site administration"
-admin.site.index_title = 'Admin Area'
-admin.site.site_title = 'Datim - KHIS Data IL Administration'
+admin.site.index_title = 'Backend Admin Area'
+admin.site.site_title = 'Data IL Backend Administration'

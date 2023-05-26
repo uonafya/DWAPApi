@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractUser
 )
 from django.contrib.auth.models import Group
-from api.models import Facilities
+from api.models import *
 
 # Create your models here.
 
@@ -33,14 +33,15 @@ class EmailConfig(models.Model):
 class RoleScreens(models.Model):
     role_id = models.ForeignKey(Group, on_delete=models.CASCADE)
     screens = models.TextField(max_length=2500)
+    counties = models.ManyToManyField(counties)
     facilities = models.ManyToManyField(Facilities)
 
     class Meta:
         db_table = 'role_screens'
-        verbose_name_plural = 'Role Screens'
+        verbose_name_plural = 'Role Access'
 
     def __str__(self) -> str:
-        return self.role_id.name + " screens"
+        return self.role_id.name + " metadata"
 
 
 class MyUser(AbstractUser):

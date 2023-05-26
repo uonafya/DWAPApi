@@ -131,7 +131,7 @@ class GetComparisonRecords(generics.ListAPIView):
         to_date = self.kwargs['to_date']
         county = self.kwargs['county']
         category = self.kwargs['category']
-        return final_comparison_data.objects.filter(Q(county__icontains=county, category__icontains=category), created__range=[from_date, to_date])
+        return final_comparison_data.objects.filter(Q(county__icontains=county, category__icontains=category), create_date__range=[from_date, to_date])
 
 
 @api_view()
@@ -200,6 +200,21 @@ class CountyViewSet(viewsets.ModelViewSet):
     queryset = counties.objects.all()
     serializer_class = CountySerializer
     permission_classes = ()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()  # Get the initial queryset
+
+        # Get the 'county' parameter from the request query parameters
+        user = self.request.user
+        if user != None:
+            assigned_counties = RoleScreens.objects.filter(
+                role_id__in=user.groups.all()).values("counties")
+        if assigned_counties:
+            # Apply the filter based on the 'county' parameter
+            queryset = queryset.filter(county_name__in=assigned_counties)
+        else:
+            queryset = []
+        return queryset
 
 
 class IndicatorGroupCreate(generics.CreateAPIView):

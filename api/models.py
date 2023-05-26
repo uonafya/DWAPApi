@@ -65,6 +65,7 @@ class indicator_category(models.Model):
 
 class counties(models.Model):
     county_name = models.CharField(max_length=500, primary_key=True)
+    facilities = models.ManyToManyField("Facilities")
 
     def __str__(self):
         return self.county_name
@@ -224,3 +225,20 @@ class final_comparison_data(models.Model):
     class Meta:
         db_table = 'final_comparison_data'
         verbose_name_plural = 'Final Comparison Data'
+
+
+class Concodance(models.Model):
+    county = models.ForeignKey(
+        counties, on_delete=models.CASCADE, related_name='concodance')
+    period_start = models.DateField(blank=True, null=True)
+    period_end = models.DateField(blank=True, null=True)
+    indicator_name = models.CharField(max_length=255, blank=True, null=True)
+    percentage = models.DecimalField(
+        max_digits=10, decimal_places=2, default=90.00)
+
+    def __str__(self):
+        return self.county.county_name
+
+    class Meta:
+        db_table = 'concodance'
+        verbose_name_plural = 'Concodance'

@@ -64,7 +64,6 @@ class LogOutView(APIView):
 
 
 class LoginView(APIView):
-
     permission_classes = ()
     serializer_class = UserSerializer
 
@@ -87,24 +86,28 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         # print(request.data)
         screens_set = set()
+        facilities = set()
+        counties = set()
         if user:
-            try:
-                notices = [
-                    {"created_by": notice.created_by.username, "notified_user": notice.notified_user.username, "message": notice.message, "date": notice.created_at} for notice in Notifications.objects.filter(notified_user=user, read=False)]
-                # print(notices)
-                for role in user.groups.all():
-                    # print(role)
-                    screens = [re.sub(' ', '', s['screens']) for s in RoleScreens.objects.filter(
-                        role_id=role).values("screens")]
-                    for screen in screens:
-                        screens_set.add(screen)
-                # print(screens_set)
-            except Exception as e:
-                print(e)
+            notices = [
+                {"created_by": notice.created_by.username, "notified_user": notice.notified_user.username, "message": notice.message, "date": notice.created_at} for notice in Notifications.objects.filter(notified_user=user, read=False)]
+            for role in user.groups.all():
+                rolemeta = RoleScreens.objects.get(role_id=role)
+                for f in rolemeta.facilities.all():
+                    facilities.add(f.name)
+                for c in rolemeta.counties.all():
+                    counties.add(c.county_name)
+                screens = [str(s['screens']).strip() for s in RoleScreens.objects.filter(
+                    role_id=role).values("screens")]
+                for screen in screens:
+                    screens_set.add(screen)
+            # print(screens_set)
             return Response({
                 "user": {"username": user.username, "email": user.email, "id": user.id, "token": user.auth_token.key},
                 "roles": user.groups.values() if user.groups else None,
                 "screens": list(screens_set),
+                "facilities": list(facilities),
+                "counties": list(counties),
                 "notifications": notices})
         else:
             return Response({"error": "Wrong Credentials"}, status=status.HTTP_400_BAD_REQUEST)
@@ -123,12 +126,15 @@ class RolesScreensView(APIView):
     def get(self, request, format=None):
         roles = RoleScreens.objects.all()
         context = []
-        facilities = []
-        user_roles = []
+        facilities = set()
+        counties = set()
         for role in roles:
-            facilities = [[f.name, f.uid] for f in role.facilities.all()]
+            for f in role.facilities.all():
+                facilities.add(f.name)
+            for c in role.counties.all():
+                counties.add(c.county_name)
             context.append({'id': role.role_id.id,
-                            "role_name": role.role_id.name, "screens": role.screens, "assigned_facilities": facilities})
+                            "role_name": role.role_id.name, "screens": role.screens, "counties": list(counties), "facilities": list(facilities)})
         return Response(context)
 
     def post(self, request, format=None):

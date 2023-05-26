@@ -22,12 +22,12 @@ class MappingAdmin(admin.ModelAdmin):
 
 
 class ComparisonAdmin(admin.ModelAdmin):
-    search_fields = ('facility', 'ward', 'subcounty', 'county',
-                     'indicators', 'khis_minus_datim', 'concodance')
-    list_filter = ['create_date', 'county', 'facility', 'ward',
-                   'subcounty']
-    list_display = ['facility', 'ward', 'subcounty', 'county', 'MOH_FacilityID', 'MOH_IndicatorCode', 'DATIM_Disag_Name',
-                    'indicators', 'khis_data', 'datim_data', 'weight', 'concodance', 'khis_minus_datim']
+    search_fields = ('facility',  'category', 'ward', 'subcounty', 'county',
+                     'indicators', 'khis_minus_datim', 'concodance', 'weight')
+    list_filter = ['create_date', 'county',  'category', 'facility', 'ward',
+                   'subcounty', 'concodance', 'weight']
+    list_display = ['category', 'facility', 'ward', 'subcounty', 'county', 'MOH_FacilityID', 'MOH_IndicatorCode', 'DATIM_Disag_Name',
+                    'indicators', 'khis_data', 'datim_data', 'khis_minus_datim', 'weight', 'concodance']
 
 
 class CountyAdmin(admin.ModelAdmin):
@@ -50,6 +50,15 @@ class indicatorGroupsAdmin(admin.ModelAdmin):
     search_fields = ('name', 'id', 'created', 'lastUpdated')
 
 
+class ConcodanceAdmin(admin.ModelAdmin):
+    search_fields = ('county', 'period_start', 'period_end',
+                     'indicator_name', 'percentage')
+    list_filter = ['county', 'period_start', 'period_end', 'indicator_name', 'period_end',
+                   'indicator_name', 'percentage', ]
+    list_display = ['county', 'period_start', 'period_end',
+                    'indicator_name', 'percentage', ]
+
+
 admin.site.register(indicators, IndicatorAdmin)
 admin.site.register(indicatorType, indicatorTypeAdmin)
 admin.site.register(indicatorGroups, indicatorGroupsAdmin)
@@ -62,3 +71,4 @@ admin.site.register(mapped_data, MappingAdmin)
 admin.site.register(final_comparison_data, ComparisonAdmin)
 admin.site.register(counties, CountyAdmin)
 admin.site.register(indicator_category, CategoryAdmin)
+admin.site.register(Concodance, ConcodanceAdmin)

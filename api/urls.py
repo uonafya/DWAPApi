@@ -3,6 +3,7 @@ from .views import *
 from django.urls import path, register_converter
 from .converters import DateConverter
 from .generate_records import *
+from .insights import *
 register_converter(DateConverter, 'date')
 
 router = DefaultRouter()
@@ -11,8 +12,8 @@ router.register('listindicators', IndicatorViewSet)
 router.register('listindicator_types', IndicatorTypeViewSet)
 router.register('listindicator_groups', IndicatorGroupViewSet)
 router.register('listmiddleware_settings', MiddlewareSettingsViewSet)
-router.register('listscounties', CountyViewSet)
-router.register('listscategories', IndicatorCatsViewSet)
+router.register('listcounties', CountyViewSet)
+router.register('listcategories', IndicatorCatsViewSet)
 
 urlpatterns = [
     path('create_indicator/', IndicatorCreate.as_view(), name='create_indicator'),
@@ -43,7 +44,16 @@ urlpatterns = [
          name='get_mapped_data'),
     path('get_comparison_data/<str:county>/<str:category>/<date:from_date>/<date:to_date>/', GetComparisonRecords.as_view(),
          name='get_comparison_data'),
-    path('load_filter_data/', load_filter_data,
-         name='load_filter_data'),
+    path('facilities/<str:county>/', load_facilities,
+         name='load_facilities'),
+    path('counties/', load_counties,
+         name='counties'),
+    ############################################ insights##################################
+    path('insights/group_concodance/', CountyConcodance.as_view(),
+         name='group_concodance'),
+    path('insights/facilty_concodance/', FaciltyConcodance.as_view(),
+         name='facilty_concodance'),
+    path('insights/assets/', AssetsCount.as_view(),
+         name='assets'),
 ]
 urlpatterns += router.urls

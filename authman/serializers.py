@@ -23,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('groups', 'first_name', 'last_name',
                   'username', 'email', 'phone', 'organisation', 'password')
+        depth = 2
 
     def test_thread(selft):
         print("sending email...")
@@ -87,4 +88,5 @@ class UserSerializer(serializers.ModelSerializer):
 class RolesScreensSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoleScreens
-        fields = ('role_id', 'screens')
+        fields = ('role_id', 'screens', 'facilities', 'counties')
+        depth = 2

@@ -47,7 +47,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class CountySerializer(serializers.ModelSerializer):
     class Meta:
         model = counties
-        fields = '__all__'
+        fields = ('county_name',)
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
