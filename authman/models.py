@@ -53,6 +53,7 @@ class MyUser(AbstractUser):
     phone = models.CharField(max_length=15)
     organisation = models.CharField(
         max_length=255, default='HealthIT', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     is_active = models.BooleanField(default=False)
 
     # objects = MyUserManager()
@@ -63,6 +64,11 @@ class MyUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        # Hash the password before saving the user
+        self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
     # def has_perm(self, perm, obj=None):
     #     "Does the user have a specific permission?"

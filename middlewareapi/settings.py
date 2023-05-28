@@ -14,6 +14,7 @@ from django.core.management.utils import get_random_secret_key
 from pathlib import Path
 import os
 import sys
+from .juzmin import JAZZMIN_SETTINGS
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,6 +36,7 @@ ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS",
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -183,3 +185,4 @@ REST_FRAMEWORK = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+JAZZMIN_SETTINGS = JAZZMIN_SETTINGS

