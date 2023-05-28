@@ -98,7 +98,7 @@ JAZZMIN_SETTINGS = {
     },
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",
-    "default_icon_children": "fas fa-circle",
+    "default_icon_children": "fas fa-check-circle",
 
     #################
     # Related Modal #
