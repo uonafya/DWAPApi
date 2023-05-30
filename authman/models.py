@@ -43,6 +43,8 @@ class RoleScreens(models.Model):
     def __str__(self) -> str:
         return self.role_id.name + " metadata"
 
+from django.contrib.auth.models import Group
+
 
 class MyUser(AbstractUser):
     email = models.EmailField(
