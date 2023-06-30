@@ -44,10 +44,9 @@ urlpatterns = [
          name='get_mapped_data'),
     path('get_comparison_data/<str:county>/<str:category>/<date:from_date>/<date:to_date>/', GetComparisonRecords.as_view(),
          name='get_comparison_data'),
-    path('facilities/<str:county>/', load_facilities,
+    path('loadfacilities/', load_facilities,
          name='load_facilities'),
-    path('counties/', load_counties,
-         name='counties'),
+
     ############################################ insights##################################
     path('insights/group_concodance/', CountyConcodance.as_view(),
          name='group_concodance'),

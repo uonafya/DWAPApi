@@ -8,82 +8,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
 
-
 @api_view()
-def load_facilities(request, county):
-    datim_df = get_datim_non_null_values("all", "all", "2022-10-01")
-    filtered_df = datim_df.query("county == @county")
-    facilities = filtered_df['facility'].tolist()
-    uids = filtered_df['DATIM_UID'].tolist()
-    county = counties.objects.get(county_name=county)
-    for facility, uid in zip(facilities, uids):
-        # print(facility, uid)
-        newfacility, created = Facilities.objects.get_or_create(
-            name=facility, uid=uid)
-        county.facilities.add(newfacility)
-    county.save()
-    return Response({"Operation succeeded...Facilities in dataset loaded successfully!"})
+def load_facilities(request):
+    STATIC_ROOT = os.path.join(ABSOLUTE_PATH(), "static\\setupfiles")
+    data = pd.read_csv(os.path.join(STATIC_ROOT,'Facilities.csv'))
+    extracted_data = data[['uid', 'mflcode', 'facility', 'level', 'ward', 'subcounty', 'county']]
+    print(extracted_data[0])
 
-
-@api_view()
-def load_counties(request):
-    mapping_df = load_mapping_csv("all", "all")
-    listcounties = [
-        "Baringo",
-        "Bomet",
-        "Bungoma",
-        "Busia",
-        "Elgeyo-Marakwet",
-        "Embu",
-        "Garissa",
-        "Homa Bay",
-        "Isiolo",
-        "Kajiado",
-        "Kakamega",
-        "Kericho",
-        "Kiambu",
-        "Kilifi",
-        "Kirinyaga",
-        "Kisii",
-        "Kisumu",
-        "Kitui",
-        "Kwale",
-        "Laikipia",
-        "Lamu",
-        "Machakos",
-        "Makueni",
-        "Mandera",
-        "Marsabit",
-        "Meru",
-        "Migori",
-        "Mombasa",
-        "Murang'a",
-        "Nairobi",
-        "Nakuru",
-        "Nandi",
-        "Narok",
-        "Nyamira",
-        "Nyandarua",
-        "Nyeri",
-        "Samburu",
-        "Siaya",
-        "Taita-Taveta",
-        "Tana River",
-        "Tharaka-Nithi",
-        "Trans-Nzoia",
-        "Turkana",
-        "Uasin Gishu",
-        "Vihiga",
-        "Wajir",
-        "West Pokot"
-    ]
-    for item in mapping_df.DATIM_Indicator_Category.unique():
-        cats, created = indicator_category.objects.get_or_create(
-            category_name=item)
-    for item in listcounties:
-        countie, created = counties.objects.get_or_create(
-            county_name=str(item+" County"))
-    return Response({"Operation succeeded...Counties and Indicator Categories in dataset loaded successfully!"})
 
 
 @ api_view()
