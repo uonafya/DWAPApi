@@ -65,19 +65,26 @@ class FileUploadViewSet(viewsets.ModelViewSet):
     serializer_class = FileUploadSerializer
     permission_classes = ()
 
-    # def create(self, request):
-    #     try:
-    #         serializer = FileUploadSerializer(
-    #             data=request.data, context={"request": request})
-    #         serializer.is_valid(raise_exception=True)
-    #         serializer.save()
+    def create(self, request):
+        try:
+            # serializer = FileUploadSerializer(
+            #     data=request.data, context={"request": request})
+            # serializer.is_valid(raise_exception=True)
+            # serializer.save()
+            files = request.FILES.getlist('mapping_file')
+            print(files)
+            if files:
+                for f in files:
+                    print(f.name)
+                    p, created = Data_Mapping_Files.objects.get_or_create(
+                        mapping_file=f)
 
-    #         dict_response = {"error": False,
-    #                          "message": "File Saved Successfully"}
-    #     except:
-    #         dict_response = {"error": True,
-    #                          "message": "Error During Saving Data"}
-    #     return Response(dict_response)
+            dict_response = {"icon": "success",
+                             "message": "File Saved Successfully"}
+        except:
+            dict_response = {"icon": "error",
+                             "message": "Error During Saving Data"}
+        return Response(dict_response)
 
     def list(self, request):
         files = Data_Mapping_Files.objects.all()
@@ -208,10 +215,10 @@ class CountyViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user != None:
             assigned_counties = RoleScreens.objects.filter(
-                role_id__in=user.groups.all()).values("counties")
+                role_id__in=user.groups.all()).values("counties__name")
         if assigned_counties:
             # Apply the filter based on the 'county' parameter
-            queryset = queryset.filter(county_name__in=assigned_counties)
+            queryset = queryset.filter(name__in=assigned_counties)
         else:
             queryset = []
         return queryset

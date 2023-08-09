@@ -32,7 +32,8 @@ class EmailConfig(models.Model):
 
 class RoleScreens(models.Model):
     role_id = models.ForeignKey(Group, on_delete=models.CASCADE)
-    screens = models.TextField(max_length=2500)
+    screens = models.TextField(
+        max_length=2500, default="Dashboard,DataAlignment,IndicatorMappingRules,IndicatorComparison,DataQuality,Indicators,AllIndicators,Categories,Security,DataPullSchedule,Roles,Users,PasswordPolicy,Reports")
     counties = models.ManyToManyField(counties)
     facilities = models.ManyToManyField(Facilities)
 

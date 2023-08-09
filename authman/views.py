@@ -98,7 +98,7 @@ class LoginView(APIView):
                 for f in rolemeta.facilities.all():
                     facilities.add(f.name)
                 for c in rolemeta.counties.all():
-                    counties.add(c.county_name)
+                    counties.add(c.name)
                 screens = [str(s['screens']).strip() for s in RoleScreens.objects.filter(
                     role_id=role).values("screens")]
                 for screen in screens:
@@ -134,7 +134,8 @@ class RolesScreensView(APIView):
             for f in role.facilities.all():
                 facilities.add(f.name)
             for c in role.counties.all():
-                counties.add(c.county_name)
+                counties.add(c.name)
+            print(counties)
             context.append({'id': role.role_id.id,
                             "role_name": role.role_id.name, "screens": role.screens, "counties": list(counties), "facilities": list(facilities)})
         return Response(context)

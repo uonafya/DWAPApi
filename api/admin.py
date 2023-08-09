@@ -31,10 +31,24 @@ class ComparisonAdmin(admin.ModelAdmin):
 
 
 class CountyAdmin(admin.ModelAdmin):
-    search_fields = ('county_name',)
-    list_filter = ['county_name', ]
-    list_display = ['county_name', ]
+    search_fields = ('name',)
+    list_filter = ['name', ]
+    list_display = ['name', ]
 
+class SubCountyAdmin(admin.ModelAdmin):
+    search_fields = ('name',)
+    list_filter = ['name', ]
+    list_display = ['name', ]
+
+class WardAdmin(admin.ModelAdmin):
+    search_fields = ('name',)
+    list_filter = ['name', ]
+    list_display = ['name', ]
+
+class FacilitiesAdmin(admin.ModelAdmin):
+    search_fields = ('name','uid','mfl_code','level')
+    list_filter = ['name','uid','mfl_code','level' ]
+    list_display = ['name','uid','mfl_code','level' ]
 
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('category_name',)
@@ -64,11 +78,13 @@ admin.site.register(indicatorType, indicatorTypeAdmin)
 admin.site.register(indicatorGroups, indicatorGroupsAdmin)
 admin.site.register(middleware_settings)
 admin.site.register(total_records)
-admin.site.register(Facilities)
+admin.site.register(Facilities,FacilitiesAdmin)
 admin.site.register(schedule_settings)
 admin.site.register(Data_Mapping_Files)
 admin.site.register(mapped_data, MappingAdmin)
 admin.site.register(final_comparison_data, ComparisonAdmin)
 admin.site.register(counties, CountyAdmin)
+admin.site.register(subcounties,SubCountyAdmin)
+admin.site.register(ward,WardAdmin)
 admin.site.register(indicator_category, CategoryAdmin)
 admin.site.register(Concodance, ConcodanceAdmin)

@@ -80,7 +80,7 @@ class AssetsCount(APIView):
             facilities_count = Facilities.objects.filter(
                 name__in=assigned_facilities).count()
             counties_count = counties.objects.filter(
-                county_name__in=assigned_counties).count()
+                name__in=assigned_counties).count()
             data.append({"facilities": facilities_count,
                         "counties": counties_count})
         else:

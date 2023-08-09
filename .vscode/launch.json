@@ -8,8 +8,8 @@
             "name": "Python: Django",
             "type": "python",
             "request": "launch",
-            "python": "E:\\projects\\env\\Scripts\\python",
-            "program": "${workspaceFolder}\\manage.py",
+            "python": "E:\\projects\\HealthIT\\middlewareapi\\env\\Scripts\\python",
+            "program": "${workspaceFolder}\\middlewareapi\\manage.py",
             "args": [
                 "runserver"
             ],

@@ -11,9 +11,34 @@ from rest_framework import generics
 @api_view()
 def load_facilities(request):
     STATIC_ROOT = os.path.join(ABSOLUTE_PATH(), "static\\setupfiles")
-    data = pd.read_csv(os.path.join(STATIC_ROOT,'Facilities.csv'))
-    extracted_data = data[['uid', 'mflcode', 'facility', 'level', 'ward', 'subcounty', 'county']]
-    print(extracted_data[0])
+    datadf = pd.read_csv(os.path.join(STATIC_ROOT,'Facilities.csv'))
+    data_dict=datadf.to_dict(orient='records')
+    #uid,mflcode,facility,level,ward,subcounty,county
+    for item in data_dict:
+        name = item['county']
+        subname = item['subcounty']
+        ward_name = item['ward']
+        facility_name = item['facility']
+        mfl_code = item['mflcode']
+        uid=item['uid']
+        level = item['level']
+
+        # Retrieve or create the county object
+        county, _ = counties.objects.get_or_create(name=name)
+
+        # Retrieve or create the subcounty object within the county
+        subcounty, _ = subcounties.objects.get_or_create(name=subname)
+        county.subcounties.add(subcounty)
+
+        # Retrieve or create the ward object within the subcounty
+        ward_obj, _ = ward.objects.get_or_create(name=ward_name)
+        subcounty.wards.add(ward_obj)
+
+        # Create the facility object and establish the relationship with the ward
+        facility, _ = Facilities.objects.get_or_create(name=facility_name,uid=uid, mfl_code=mfl_code, level=level)
+        ward_obj.facilities.add(facility)
+
+    return Response("Done pulling facility records!")
 
 
 
@@ -21,9 +46,12 @@ def load_facilities(request):
 def generate_comparison_file(request, data_source, category, county, from_date, to_date):
     # try:
     # import pdb
-    # print(data_source, county)
+    print(int(from_date.year))
     datim_df = get_datim_non_null_values(category, county, from_date)
-    moh_df = get_moh_non_null_values(county)
+    if int(from_date.year)==2022:
+        moh_df = get_moh_non_null_values(category, county, from_date)
+    else:
+        moh_df = get_new_moh_non_null_values(category, county, from_date)
     # print(datim_df['created'].iloc[0], from_date, to_date)
     if datim_df.empty:
         return Response({"message": "Could not find datim file for the selected indicator!\nPlease upload the file under the \'Uploads Files\' tab"})
@@ -100,7 +128,7 @@ def generate_comparison_file(request, data_source, category, county, from_date, 
                                 'Final_Datim_Mapped_Csv_File'+str(datetime.now().minute)+".csv"), index=False)
     print(temp_df['concodance(%)'].sum())
     print(final_data)
-    county, created = counties.objects.get_or_create(county_name=county)
+    county, created = counties.objects.get_or_create(name=county)
     concodance, created = Concodance.objects.get_or_create(
         county=county, period_start=from_date, period_end=to_date, indicator_name=category, percentage=temp_df['concodance(%)'].sum())
     return Response({"message": "Data Comparison mapping for {} completed successfully!".format(str(county))})

@@ -106,6 +106,8 @@ JAZZMIN_SETTINGS = {
         #######################api##########################
         "api.concodance": "fas fa-percent",
         "api.counties": "fas fa-cube",
+        "api.subcounties": "fas fa-cube",
+        "api.ward": "fas fa-cube",
         "api.data_mapping_files": "fas fa-file",
         "api.middleware_settings": "fas fa-cog",
         "api.facilities": "fas fa-building",

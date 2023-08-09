@@ -52,8 +52,7 @@ class indicators(models.Model):
 
 
 class indicator_category(models.Model):
-    category_name = models.CharField(
-        max_length=500, primary_key=True)
+    category_name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.category_name
@@ -64,16 +63,50 @@ class indicator_category(models.Model):
 
 
 class counties(models.Model):
-    county_name = models.CharField(max_length=500, primary_key=True)
-    facilities = models.ManyToManyField("Facilities")
+    name = models.CharField(max_length=100)
+    subcounties=models.ManyToManyField("subcounties",blank=True,null=True)
 
     def __str__(self):
-        return self.county_name
+        return self.name
 
     class Meta:
         db_table = 'counties'
         verbose_name_plural = 'Counties'
 
+class subcounties(models.Model):
+    name = models.CharField(max_length=100)
+    wards=models.ManyToManyField("ward",blank=True,null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'subcounties'
+        verbose_name_plural = 'Sub Counties'
+
+class ward(models.Model):
+    name = models.CharField(max_length=100)
+    facilities = models.ManyToManyField("Facilities",blank=True,null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'ward'
+        verbose_name_plural = 'Wards'
+
+class Facilities(models.Model):
+    name = models.CharField(max_length=255, default='Mulele', blank=True,null=True)
+    uid = models.CharField(max_length=255, default='xxxxxxxxx', blank=True,null=True)
+    mfl_code=models.CharField(max_length=255, default='0000', blank=True,null=True)
+    level=models.CharField(max_length=5,default=5, blank=True,null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'facilities'
+        verbose_name_plural = 'Facilities'
 
 class indicatorType(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
@@ -114,19 +147,6 @@ class middleware_settings(models.Model):
         verbose_name_plural = 'Data Sync Settings'
 
 
-class Facilities(models.Model):
-    name = models.CharField(max_length=255, default='Mulele')
-    uid = models.CharField(
-        max_length=255, default='HkslWRBHgWw', primary_key=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'facilities'
-        verbose_name_plural = 'Facilities'
-
-
 class schedule_settings(models.Model):
     sync_time = models.DateTimeField()
     shedule_description = models.CharField(
@@ -152,11 +172,7 @@ class total_records(models.Model):
 
 
 class Data_Mapping_Files(models.Model):
-    mapping_files = models.FileField(upload_to='mapping_files/')
-    final_mapped = models.FileField(
-        upload_to='final_mapped/', blank=True, null=True)
-    final_comparison = models.FileField(
-        upload_to='final_comparison/', blank=True, null=True)
+    mapping_file = models.FileField(upload_to='mapping_files/%Y')
 
     def __str__(self):
         return self.mapping_files.url
@@ -237,7 +253,7 @@ class Concodance(models.Model):
         max_digits=10, decimal_places=2, default=90.00)
 
     def __str__(self):
-        return self.county.county_name
+        return self.county.name
 
     class Meta:
         db_table = 'concodance'

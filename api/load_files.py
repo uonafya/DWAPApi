@@ -14,8 +14,10 @@ def ABSOLUTE_PATH():
     return Path(__file__).resolve().parent.parent
 
 
-def load_mapping_csv(category, qouter=""):
-    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
+def load_mapping_csv(category, year,qouter=""):
+    if year==None:
+        year=datetime.now().year
+    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), f"media\\mapping_files\\{year}")
     # print(MEDIA_ROOT)
     folder_path = MEDIA_ROOT
     res = []
@@ -39,9 +41,12 @@ def load_mapping_csv(category, qouter=""):
 def load_datim_csv(category, county, fromdate):
     date_str = str(fromdate)
     date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-    print(date_obj)
+    print(date_obj.year)
+    #category=category.replace("_","-")
+    print(category)
 
-    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
+    MEDIA_ROOT = os.path.join(
+        ABSOLUTE_PATH(), f"media\\mapping_files\\{date_obj.year}")
     # datast_grouping = GruopSeriesData.objects.get(dataset_name='datim')
     # print(MEDIA_ROOT)
     folder_path = MEDIA_ROOT
@@ -49,34 +54,33 @@ def load_datim_csv(category, county, fromdate):
     for path in os.listdir(folder_path):
         if os.path.isfile(os.path.join(folder_path, path)):
             res.append(path)
-    # print(res)
+    print(res)
     try:
         if str(category) != 'all':
             datimfile = os.path.join(
-                folder_path,  [i for i in res if re.search(str(category).lower(), str(i).lower()) != None][0])
+                folder_path,  [str(i)for i in res if re.search(str(category).lower()+".csv", str(i).lower()) != None][0])
         else:
             datimfile = os.path.join(
-                folder_path,  [i for i in res if re.search('tx_curr', str(i).lower()) != None][0])
+                folder_path,  [str(i) for i in res if re.search('tx-curr.csv', str(i).lower()) != None][0])
     except Exception as e:
         datimfile = ''
         print(e)
     # import pdb
+    print(datimfile)
     if datimfile != '':
         year = date_obj.year
         print(year)
         cols = ["orgunitlevel2", "orgunitlevel2", "orgunitlevel3", "orgunitlevel4", "orgunitlevel5", "organisationunitid",
-                "dataid", "dataname", "Oct to Dec {}".format(year-1), "Jan to Mar {}".format(year), "Apr to Jun {}".format(year)]
+                "dataid", "dataname", f"Oct to Dec {year-1}", f"Jan to Mar {year}", f"Apr to Jun {year}"]
         datim_df = pd.read_csv(datimfile, usecols=cols)
         # print(datim_df)
         datim_df.insert(0, 'DATIM_Indicator_Category', str(
             (str(category).upper()+',')*datim_df.shape[0]).split(",")[:-1], True)
         # add created date filter fo tx_curr
-        year = int(datetime.now().year)-1
         if str(fromdate) == '{}-10-01'.format(year-1):
             datim_df.drop(columns=["Jan to Mar {}".format(
                 year), "Apr to Jun {}".format(year)], inplace=True)
-            datim_df.rename(columns={"Oct to Dec {}".format(
-                year-1): "datim_data"}, inplace=True)
+            datim_df.rename(columns={"Oct to Dec {}".format(year-1): "datim_data"}, inplace=True)
             datim_df['created'] = '{}-10-01'.format(year-1)
         elif str(fromdate) == '{}-01-01'.format(year):
             datim_df.drop(columns=["Oct to Dec {}".format(
@@ -118,8 +122,99 @@ def load_datim_csv(category, county, fromdate):
             # print(datim_df)
         datim_df.drop_duplicates(inplace=True)
         # pdb.set_trace()
-        # print(datim_df)
+        #print(datim_df)
         return datim_df
+    else:
+        return pd.DataFrame([])
+
+
+def load_new_khis_csv(category, county, fromdate):
+    date_str = str(fromdate)
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    print(date_obj)
+    category = category.replace("_", "-")
+
+    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), f"media\\mapping_files\\{date_obj.year}")
+    # datast_grouping = GruopSeriesData.objects.get(dataset_name='datim')
+    # print(MEDIA_ROOT)
+    folder_path = MEDIA_ROOT
+    res = []
+    for path in os.listdir(folder_path):
+        if os.path.isfile(os.path.join(folder_path, path)):
+            res.append(path)
+    # print(res)
+    try:
+        if str(category) != 'all':
+            mohfile = os.path.join(
+                folder_path,  [str(i).replace("_", "-") for i in res if re.search(str(category).lower(), str(i).lower()) != None][0])
+        else:
+            mohfile = os.path.join(
+                folder_path,  [i for i in res if re.search('tx-curr khis.csv', str(i).lower()) != None][0])
+    except Exception as e:
+        mohfile = ''
+        print(e)
+    # import pdb
+    print(mohfile)
+    if mohfile != '':
+        year = date_obj.year
+        print(year)
+        cols = ['orgunitlevel2', "organisationunitid",
+                "dataid", "dataname", f"Oct to Dec {year-1}", f"Jan to Mar {year}", f"Apr to Jun {year}"]
+        moh_df = pd.read_csv(mohfile, usecols=cols)
+        # print(datim_df)
+        moh_df.insert(0, 'MOH_Indicator_Category', str(
+            (str(category).upper()+',')*moh_df.shape[0]).split(",")[:-1], True)
+        # add created date filter fo tx_curr
+        if str(fromdate) == '{}-10-01'.format(year-1):
+            moh_df.drop(columns=["Jan to Mar {}".format(
+                year), "Apr to Jun {}".format(year)], inplace=True)
+            moh_df.rename(columns={"Oct to Dec {}".format(
+                year-1): "khis_data"}, inplace=True)
+            moh_df['created'] = '{}-10-01'.format(year-1)
+        elif str(fromdate) == '{}-01-01'.format(year):
+            moh_df.drop(columns=["Oct to Dec {}".format(
+                year-1), "Apr to Jun {}".format(year)], inplace=True)
+            moh_df.rename(columns={"Jan to Mar {}".format(
+                year): "khis_data"}, inplace=True)
+            moh_df['created'] = '{}-01-01'.format(year)
+        elif str(fromdate) == '{}-04-01'.format(year):
+            moh_df.drop(columns=["Oct to Dec {}".format(
+                year-1), "Jan to Mar {}".format(year)], inplace=True)
+            moh_df.rename(columns={"Apr to Jun {}".format(
+                year-1): "khis_data"}, inplace=True)
+            moh_df['created'] = '{}-04-01'.format(year)
+        elif str(fromdate) == '{}-07-01'.format(year):
+            moh_df.drop(columns=["Oct to Dec {}".format(
+                year-1), "Jan to Mar {}".format(year)], inplace=True)
+            moh_df.rename(columns={"Jul to Sept {}".format(
+                year-1): "khis_data"}, inplace=True)
+            moh_df['created'] = '{}-07-01'.format(year)
+        else:
+            moh_df.drop(columns=["Apr to Jun {}".format(
+                year), "Jan to Mar {}".format(year)], inplace=True)
+            moh_df.rename(columns={"Oct to Dec {}".format(
+                year-1): "khis_data"}, inplace=True)
+            moh_df['created'] = '{}-10-01'.format(year-1)
+        # UID Mappings
+        # datim_cats = pd.merge(load_mapping_csv(category, county), datim_df,
+        #                       on='DATIM_Disag_ID', how='inner')
+        # datim_df = datim_cats
+        # moh_df.rename(columns={'MOH_FacilityID': 'MOH_UID', 'Value': 'khis_data',
+        #                    'inndicator': 'MOH_Indicator_Name', 'MOH_IndicatorCode': 'MOH_Indicator_ID'}, inplace=True)
+        moh_df.rename(columns={'orgunitlevel2': 'county', 'organisationunitid': 'MOH_UID',
+                      'dataid': 'MOH_Indicator_ID', 'dataname': 'MOH_Indicator_Name'}, inplace=True)
+        # datim_df['DATIM_Indicator_Category'] = str(category).upper()
+
+        #print(moh_df)
+
+        if str(county).lower() != 'all':
+            # print(county)
+            moh_df = moh_df.query(f"county == '{county}'")
+            # print(datim_df)
+        moh_df.drop_duplicates(inplace=True)
+        # pdb.set_trace()
+        #print(moh_df)
+        return moh_df
     else:
         return pd.DataFrame([])
 
@@ -141,18 +236,39 @@ def get_datim_non_null_values(category, county, fromdate):
         datim_df.drop_duplicates(inplace=True)
         datim_df = datim_df[datim_df.datim_data != 0]
         # print(datim_df.head(1))
-        # print(datim_df)
+        #print(datim_df)
         # .sample(n=2000, replace=False)  # datim_df.iloc[:2000]
         return datim_df
     else:
         return pd.DataFrame([])
 
 
-def load_moh_csv(county):
-    print(county)
-    MEDIA_ROOT = os.path.join(ABSOLUTE_PATH(), "media\\mapping_files")
+def get_new_moh_non_null_values(category, county, fromdate):
+    try:
+        moh_df = load_new_khis_csv(category, county, fromdate)
+    except Exception as e:
+        moh_df = pd.DataFrame()
+        print(e)
+    if not moh_df.empty:
+        moh_df = moh_df[~moh_df['MOH_Indicator_ID'].isnull()]
+        moh_df['khis_data'].fillna(0, inplace=True)  # Fill NaN values
+        moh_df['khis_data'] = moh_df['khis_data'].astype(int)
+        moh_df.drop_duplicates(inplace=True)
+        moh_df = moh_df[moh_df.khis_data != 0]
+        # print(datim_df.head(1))
+        # print(datim_df)
+        # .sample(n=2000, replace=False)  # datim_df.iloc[:2000]
+        return moh_df
+    else:
+        return pd.DataFrame([])
 
-    # print(MEDIA_ROOT)
+
+def load_moh_csv(county, fromdate):
+    print(county, fromdate.year)
+    MEDIA_ROOT = os.path.join(
+        ABSOLUTE_PATH(), f"media\\mapping_files\\{fromdate.year}")
+
+    #print(MEDIA_ROOT)
     # import pdb
     folder_path1 = MEDIA_ROOT
     res1 = []
@@ -174,9 +290,9 @@ def load_moh_csv(county):
     return moh_df
 
 
-def get_moh_non_null_values(county):
+def get_moh_non_null_values(category=None,county=None,from_date=None):
     # import pdb
-    moh_df = load_moh_csv(county)
+    moh_df = load_moh_csv(county, from_date)
     moh_df = moh_df[~moh_df['MOH_Indicator_ID'].isnull()]
     moh_df['khis_data'].fillna(0, inplace=True)  # Fill NaN values
     moh_df['khis_data'] = moh_df['khis_data'].astype(int)
