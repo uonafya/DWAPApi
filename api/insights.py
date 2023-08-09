@@ -27,21 +27,32 @@ class CountyConcodance(APIView):
         print(request.user)
         if request.user.is_authenticated:
             assigned_counties = RoleScreens.objects.filter(
-                role_id__in=request.user.groups.all()).values("counties")
+                role_id__in=request.user.groups.all()).values("counties__name")
             if category.lower() == 'all':
-                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date, county__in=assigned_counties).values('county').annotate(
+                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date, county__name__in=assigned_counties).values('county__name').annotate(
+                    less_90=Count(Case(When(percentage__lt=90, then=1))),
+                    between_90_100=Count(Case(When(percentage__gte=90, percentage__lte=100, then=1))),
+                    more_100=Count(Case(When(percentage__gt=100, then=1)))
+                ).order_by("-county")
+            else:
+                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date, indicator_name=category, county__name__in=assigned_counties).values('county__name').annotate(
+                    less_90=Count(Case(When(percentage__lt=90, then=1))),
+                    between_90_100=Count(Case(When(percentage__gte=90, percentage__lte=100, then=1))),
+                    more_100=Count(Case(When(percentage__gt=100, then=1)))).order_by("-county")
+        else:
+            if category.lower() == 'all':
+                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date).values('county__name').annotate(
                     less_90=Count(Case(When(percentage__lt=90, then=1))),
                     between_90_100=Count(
                         Case(When(percentage__gte=90, percentage__lte=100, then=1))),
                     more_100=Count(Case(When(percentage__gt=100, then=1)))
                 ).order_by("-county")
             else:
-                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date, indicator_name=category, county__in=assigned_counties).values('county').annotate(
+                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date, indicator_name=category).values('county__name').annotate(
                     less_90=Count(Case(When(percentage__lt=90, then=1))),
                     between_90_100=Count(
                         Case(When(percentage__gte=90, percentage__lte=100, then=1))),
-                    more_100=Count(Case(When(percentage__gt=100, then=1)))
-                )
+                    more_100=Count(Case(When(percentage__gt=100, then=1)))).order_by("-county")
         return Response(list(data))
 
 
@@ -76,7 +87,8 @@ class AssetsCount(APIView):
             assigned_facilities = RoleScreens.objects.filter(
                 role_id__in=request.user.groups.all()).values("facilities__name")
             assigned_counties = RoleScreens.objects.filter(
-                role_id__in=request.user.groups.all()).values("counties")
+                role_id__in=request.user.groups.all()).values("counties__name")
+            print(assigned_counties)
             facilities_count = Facilities.objects.filter(
                 name__in=assigned_facilities).count()
             counties_count = counties.objects.filter(
