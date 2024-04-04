@@ -1,3 +1,4 @@
+from django.core.validators import MinLengthValidator
 from django.db import models
 from django.urls import reverse
 # Create your models here.
@@ -24,3 +25,25 @@ class Notifications(models.Model):
 
     def get_absolute_url(self):
         return reverse("_detail", kwargs={"pk": self.pk})
+
+
+
+# Create your models here.
+class EmailConfig(models.Model):
+    from_email = models.EmailField(max_length=100)
+    email_password = models.CharField(
+        max_length=128, validators=[MinLengthValidator(8)])
+    email_host = models.CharField(max_length=50, default="mail.tdbsoft.co.ke")
+    email_port = models.CharField(max_length=5, default=465)
+    use_tls = models.BooleanField(default=True)
+    fail_silently = models.BooleanField(default=True)
+
+    # def save(self, *args, **kwargs):
+    #     self.email_password = make_password(self.email_password)
+    #     super(EmailConfig, self).save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return self.from_email
+
+    class Meta:
+        verbose_name_plural = 'Email Configuration'
