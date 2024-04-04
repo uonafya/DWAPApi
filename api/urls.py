@@ -10,10 +10,8 @@ router = DefaultRouter()
 router.register('listfiles', FileUploadViewSet)
 router.register('listindicators', IndicatorViewSet)
 router.register('listindicator_types', IndicatorTypeViewSet)
-router.register('listindicator_groups', IndicatorGroupViewSet)
 router.register('listmiddleware_settings', MiddlewareSettingsViewSet)
 router.register('listcounties', CountyViewSet)
-router.register('listcategories', IndicatorCatsViewSet)
 
 urlpatterns = [
     path('create_indicator/', IndicatorCreate.as_view(), name='create_indicator'),
@@ -22,8 +20,6 @@ urlpatterns = [
     path('listschedules/', ScheduleView.as_view(), name='schedules'),
     path('listschedules/<int:pk>/',
          ScheduleView.as_view(), name='update_schedules'),
-    path('create_indicator_group/', IndicatorGroupCreate.as_view(),
-         name='create_indicator_group'),
     path('indicators/<int:limit>/', IndicatorList.as_view(),
          name='indicators'),
     path('indicators/filter/<date:from_date>/<date:to_date>/<int:limit>/', IndicatorFilter.as_view(),

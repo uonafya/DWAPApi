@@ -29,30 +29,29 @@ class CountyConcodance(APIView):
             assigned_counties = RoleScreens.objects.filter(
                 role_id__in=request.user.groups.all()).values("counties__name")
             if category.lower() == 'all':
-                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date, county__name__in=assigned_counties).values('county__name').annotate(
-                    less_90=Count(Case(When(percentage__lt=90, then=1))),
-                    between_90_100=Count(Case(When(percentage__gte=90, percentage__lte=100, then=1))),
-                    more_100=Count(Case(When(percentage__gt=100, then=1)))
+                data = final_comparison_data.objects.filter(create_date__gte=from_date, create_date__lte=to_date, county__in=assigned_counties).values('county').annotate(
+                    less_90=Count(Case(When(concodance__lt=0.9, then=1))),
+                    between_90_100=Count(Case(When(concodance__gte=0.9, concodance__lte=1, then=1))),
+                    more_100=Count(Case(When(concodance__gt=1, then=1)))
                 ).order_by("-county")
             else:
-                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date, indicator_name=category, county__name__in=assigned_counties).values('county__name').annotate(
-                    less_90=Count(Case(When(percentage__lt=90, then=1))),
-                    between_90_100=Count(Case(When(percentage__gte=90, percentage__lte=100, then=1))),
-                    more_100=Count(Case(When(percentage__gt=100, then=1)))).order_by("-county")
+                data = final_comparison_data.objects.filter(create_date__gte=from_date, create_date__lte=to_date, category=category, county__in=assigned_counties).values('county').annotate(
+                    less_90=Count(Case(When(concodance__lt=0.90, then=1))),
+                    between_90_100=Count(Case(When(concodance__gte=0.90, concodance__lte=1, then=1))),
+                    more_100=Count(Case(When(concodance__gt=1, then=1)))).order_by("-county")
         else:
             if category.lower() == 'all':
-                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date).values('county__name').annotate(
-                    less_90=Count(Case(When(percentage__lt=90, then=1))),
-                    between_90_100=Count(
-                        Case(When(percentage__gte=90, percentage__lte=100, then=1))),
-                    more_100=Count(Case(When(percentage__gt=100, then=1)))
+                data = final_comparison_data.objects.filter(create_date__gte=from_date, create_date__lte=to_date).values('county').annotate(
+                    less_90=Count(Case(When(concodance__lt=0.9, then=1))),
+                    between_90_100=Count(Case(When(concodance__gte=0.9, concodance__lte=1, then=1))),
+                    more_100=Count(Case(When(concodance__gt=1, then=1)))
                 ).order_by("-county")
             else:
-                data = Concodance.objects.filter(period_start__gte=from_date, period_end__lte=to_date, indicator_name=category).values('county__name').annotate(
-                    less_90=Count(Case(When(percentage__lt=90, then=1))),
+                data = final_comparison_data.objects.filter(create_date__gte=from_date, create_date__lte=to_date, category=category).values('county').annotate(
+                    less_90=Count(Case(When(concodance__lt=0.9, then=1))),
                     between_90_100=Count(
-                        Case(When(percentage__gte=90, percentage__lte=100, then=1))),
-                    more_100=Count(Case(When(percentage__gt=100, then=1)))).order_by("-county")
+                        Case(When(concodance__gte=0.90, concodance__lte=1, then=1))),
+                    more_100=Count(Case(When(concodance__gt=1, then=1)))).order_by("-county")
         return Response(list(data))
 
 

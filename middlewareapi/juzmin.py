@@ -46,7 +46,9 @@ JAZZMIN_SETTINGS = {
         {"model": "authman.MyUser"},
 
         # App with dropdown menu to all its models pages (Permissions checked against models)
+        {"app": "authman"},
         {"app": "api"},
+        {"app": "notifications"},
     ],
 
     #############
@@ -68,7 +70,7 @@ JAZZMIN_SETTINGS = {
     "show_sidebar": True,
 
     # Whether to aut expand the menu
-    "navigation_expanded": True,
+    "navigation_expanded": False,
 
     # Hide these apps when generating side menu e.g (auth)
     "hide_apps": [],

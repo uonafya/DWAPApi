@@ -35,13 +35,13 @@ def extract_age_group(element):
     # print(element, age_group)
     try:
         if 'MOH' not in element:
-            if max_limit(age_group) >= 15:
+            if end_limit(age_group) >= 15:
                 age_group = "15+"
                 element = str(element).replace(age_group, "15+")
-            elif (max_limit(age_group) >= 10) and (max_limit(age_group) <= 14):
+            elif (end_limit(age_group) >= 10) and (end_limit(age_group) <= 14):
                 age_group = "10-14"
                 element = str(element).replace(age_group, "10-14")
-            elif (max_limit(age_group) >= 2) and (max_limit(age_group) <= 9):
+            elif (end_limit(age_group) >= 2) and (end_limit(age_group) <= 9):
                 element = str(element).replace(age_group, "1-9")
                 age_group = "1-9"
         return age_group
@@ -85,7 +85,7 @@ def similarity(khis_name, datim_name):
     return max_similarity
 
 
-def max_limit(age_group):
+def end_limit(age_group):
     try:
         end_limit = int(re.findall(r'\d+', age_group)[-1])
         return end_limit
@@ -98,11 +98,11 @@ def rename_datim(element):
         r"(\d{2}[+])|(\d+[-]\d+)|([<]\d{1})", element).group()
     try:
         if ('TX_NEW' or 'TX_CURR') in element:
-            if max_limit(age_group) >= 15:
+            if end_limit(age_group) >= 15:
                 element = str(element).replace(age_group, "15+")
-            elif (max_limit(age_group) >= 10) and (max_limit(age_group) <= 14):
+            elif (end_limit(age_group) >= 10) and (end_limit(age_group) <= 14):
                 element = str(element).replace(age_group, "10-14")
-            elif (max_limit(age_group) >= 2) and (max_limit(age_group) <= 9):
+            elif (end_limit(age_group) >= 2) and (end_limit(age_group) <= 9):
                 element = str(element).replace(age_group, "1-9")
         return element
     except Exception as e:
@@ -128,8 +128,32 @@ def map_data(mohdict, datimydict):
                 khis_gender = extract_gender(khis_name)
                 # print(max_limit(datim_age))
                 # print(max_limit(khis_age))
-                # <15 Unknown gender
-                if (max_limit(datim_age) >= 1 and max_limit(datim_age) <= 9) and (datim_age in khis_age) and (datim_gender in khis_gender):
+                # <1 Unknown gender
+                if (end_limit(datim_age) <= 1 and end_limit(khis_age)<=1) and (datim_age in khis_age) and (datim_gender in khis_gender):
+                    data_range = 0
+                    for element in mapped_list:
+                        if datim_name in element['DATIM_Disag_Name']:
+                            data_range = int(
+                                element['khis_data'])-int(element['datim_data'])
+                            if (data_range <= 1) or (data_range == 0):
+                                exists = False
+                            else:
+                                element['datim_data'] += int(
+                                    d['datim_data'])
+                                mohdict.remove(mohdict[j])
+                                exists = True
+                                data_range = int(
+                                    element['khis_data'])-int(element['datim_data'])
+                                if (data_range <= 1) or (data_range == 0):
+                                    next = True
+                                break
+                    if not exists:
+                        append_data(mapped_list, m, d)
+                        mohdict.remove(mohdict[j])
+                        next = True
+                        break
+                 # <15 M|F 1-9
+                elif ((end_limit(datim_age) >= 1 and end_limit(datim_age)<=9) and (end_limit(khis_age) >= 1 and end_limit(khis_age)<=9)) and (datim_age in khis_age) and (datim_gender in khis_gender):
                     data_range = 0
                     for element in mapped_list:
                         if datim_name in element['DATIM_Disag_Name']:
@@ -153,7 +177,7 @@ def map_data(mohdict, datimydict):
                         next = True
                         break
                 # <15 M|F 10-14
-                elif ((max_limit(datim_age) >= 10) and (max_limit(datim_age) <= 14)) and (datim_age in khis_age) and (datim_gender in khis_gender):
+                elif ((end_limit(datim_age) >= 10 and end_limit(datim_age)<=14) and (end_limit(khis_age) >= 10 and end_limit(khis_age)<=14)) and (datim_age in khis_age) and (datim_gender in khis_gender):
                     data_range = 0
                     for element in mapped_list:
                         if datim_name in element['DATIM_Disag_Name']:
@@ -176,8 +200,56 @@ def map_data(mohdict, datimydict):
                         mohdict.remove(mohdict[j])
                         next = True
                         break
-                # <15+ M|F
-                elif (max_limit(datim_age) >= 15) and (max_limit(khis_age) >= 15) and (datim_gender in khis_gender):
+                # 15+ M|F 15-19
+                elif ((end_limit(datim_age) >= 15 and end_limit(datim_age) <=19) and (end_limit(khis_age) >= 15 and end_limit(khis_age)<=19)) and (datim_age in khis_age) and (datim_gender in khis_gender):
+                    data_range = 0
+                    for element in mapped_list:
+                        if datim_name in element['DATIM_Disag_Name']:
+                            data_range = int(
+                                element['khis_data'])-int(element['datim_data'])
+                            if (data_range <= 1) or (data_range == 0):
+                                exists = False
+                            else:
+                                element['datim_data'] += int(
+                                    d['datim_data'])
+                                mohdict.remove(mohdict[j])
+                                exists = True
+                                data_range = int(
+                                    element['khis_data'])-int(element['datim_data'])
+                                if (data_range <= 1) or (data_range == 0):
+                                    next = True
+                                break
+                    if not exists:
+                        append_data(mapped_list, m, d)
+                        mohdict.remove(mohdict[j])
+                        next = True
+                        break
+                # 15+ M|F 20-24
+                elif ((end_limit(datim_age) >= 20 and end_limit(datim_age)<=24) and (end_limit(khis_age) <= 20 and end_limit(khis_age)<=24)) and (datim_age in khis_age) and (datim_gender in khis_gender):
+                    data_range = 0
+                    for element in mapped_list:
+                        if datim_name in element['DATIM_Disag_Name']:
+                            data_range = int(
+                                element['khis_data'])-int(element['datim_data'])
+                            if (data_range <= 1) or (data_range == 0):
+                                exists = False
+                            else:
+                                element['datim_data'] += int(
+                                    d['datim_data'])
+                                mohdict.remove(mohdict[j])
+                                exists = True
+                                data_range = int(
+                                    element['khis_data'])-int(element['datim_data'])
+                                if (data_range <= 1) or (data_range == 0):
+                                    next = True
+                                break
+                    if not exists:
+                        append_data(mapped_list, m, d)
+                        mohdict.remove(mohdict[j])
+                        next = True
+                        break
+                    # 15+ M|F 25+
+                elif ((end_limit(datim_age) >= 25) and (end_limit(khis_age) >= 25)) and (datim_age in khis_age) and (datim_gender in khis_gender):
                     data_range = 0
                     for element in mapped_list:
                         if datim_name in element['DATIM_Disag_Name']:

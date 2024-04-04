@@ -190,19 +190,6 @@ class IndicatorTypeCreate(generics.CreateAPIView):
     serializer_class = IndicatorTypeSerializer
     permission_classes = ()
 
-
-class IndicatorGroupViewSet(viewsets.ModelViewSet):
-    queryset = indicatorGroups.objects.all()
-    serializer_class = IndicatorGroupSerializer
-    permission_classes = ()
-
-
-class IndicatorCatsViewSet(viewsets.ModelViewSet):
-    queryset = indicator_category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = ()
-
-
 class CountyViewSet(viewsets.ModelViewSet):
     queryset = counties.objects.all()
     serializer_class = CountySerializer
@@ -222,11 +209,6 @@ class CountyViewSet(viewsets.ModelViewSet):
         else:
             queryset = []
         return queryset
-
-
-class IndicatorGroupCreate(generics.CreateAPIView):
-    serializer_class = IndicatorGroupSerializer
-    permission_classes = ()
 
 
 class MiddlewareSettingsViewSet(viewsets.ModelViewSet):

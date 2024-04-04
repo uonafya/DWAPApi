@@ -48,10 +48,9 @@ def generate_comparison_file(request, data_source, category, county, from_date, 
     # import pdb
     print(int(from_date.year))
     datim_df = get_datim_non_null_values(category, county, from_date)
-    if int(from_date.year)==2022:
-        moh_df = get_moh_non_null_values(category, county, from_date)
-    else:
-        moh_df = get_new_moh_non_null_values(category, county, from_date)
+    print(datim_df.head())
+    moh_df = get_moh_non_null_values(category, county, from_date)
+    print(moh_df.head())
     # print(datim_df['created'].iloc[0], from_date, to_date)
     if datim_df.empty:
         return Response({"message": "Could not find datim file for the selected indicator!\nPlease upload the file under the \'Uploads Files\' tab"})
@@ -76,7 +75,7 @@ def generate_comparison_file(request, data_source, category, county, from_date, 
         datimdict = datim_df.to_dict(orient='records')
         # print(datimdict[0])
         moh_df['created'] = pd.to_datetime(
-            moh_df['created'], format='%Y-%m-%d')
+            from_date, format='%Y-%m-%d')
         mask = (moh_df['created'] >= pd.to_datetime(from_date)) & (
             moh_df['created'] <= pd.to_datetime(to_date))
         # Filter data between two dates

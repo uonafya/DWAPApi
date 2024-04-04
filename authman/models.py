@@ -8,8 +8,6 @@ from django.contrib.auth.models import Group
 from api.models import *
 
 # Create your models here.
-
-
 class EmailConfig(models.Model):
     from_email = models.EmailField(max_length=100)
     email_password = models.CharField(
@@ -44,8 +42,31 @@ class RoleScreens(models.Model):
     def __str__(self) -> str:
         return self.role_id.name + " metadata"
 
-from django.contrib.auth.models import Group
+class MyUserManager(BaseUserManager):
+    def create_user(self, email, phone, password=None):
+        """
+        Creates and saves a User with the given email, phone and password.
+        """
+        if not email:
+            raise ValueError("Users must have an email address")
 
+        user = self.model(
+            email=self.normalize_email(email),
+            phone=phone,
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, phone, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+        return self.create_user(email, phone, password=password, **extra_fields)
 
 class MyUser(AbstractUser):
     email = models.EmailField(
@@ -58,9 +79,7 @@ class MyUser(AbstractUser):
         max_length=255, default='HealthIT', blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     is_active = models.BooleanField(default=False)
-
-    # objects = MyUserManager()
-
+    objects = MyUserManager()
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['phone', 'first_name',
                        'last_name', 'email']
@@ -70,21 +89,4 @@ class MyUser(AbstractUser):
 
     def save(self, *args, **kwargs):
         # Hash the password before saving the user
-        self.password = make_password(self.password)
         super().save(*args, **kwargs)
-
-    # def has_perm(self, perm, obj=None):
-    #     "Does the user have a specific permission?"
-    #     # Simplest possible answer: Yes, always
-    #     return True
-
-    # def has_module_perms(self, app_label):
-    #     "Does the user have permissions to view the app `app_label`?"
-    #     # Simplest possible answer: Yes, always
-    #     return True
-
-    # @property
-    # def is_staff(self):
-    #     "Is the user a member of staff?"
-    #     # Simplest possible answer: All admins are staff
-    #     return self.is_staff

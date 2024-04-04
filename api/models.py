@@ -20,26 +20,6 @@ class indicators(models.Model):
         max_length=500, blank=True, null=True)
     lastUpdated = models.DateTimeField(blank=True, null=True)
     created = models.DateTimeField(blank=True, null=True)
-    shortName = models.CharField(max_length=500, blank=True, null=True)
-    displayName = models.CharField(max_length=500, blank=True, null=True)
-    displayShortName = models.CharField(max_length=500, blank=True, null=True)
-    displayNumeratorDescription = models.CharField(
-        max_length=500, blank=True, null=True)
-    denominatorDescription = models.CharField(
-        max_length=500, blank=True, null=True)
-    displayDenominatorDescription = models.CharField(
-        max_length=500, blank=True, null=True)
-    numeratorDescription = models.CharField(
-        max_length=500, blank=True, null=True)
-    dimensionItem = models.CharField(max_length=500, blank=True, null=True)
-    displayFormName = models.CharField(max_length=500, blank=True, null=True)
-    numerator = models.CharField(max_length=2500, blank=True, null=True)
-    denominator = models.CharField(max_length=2500, blank=True, null=True)
-    dimensionItemType = models.CharField(max_length=500, blank=True, null=True)
-    indicatorType = models.ForeignKey(
-        'indicatorType', on_delete=models.CASCADE, related_name='indicators', blank=True, null=True)
-    indicatorGroups = models.ManyToManyField(
-        'indicatorGroups', blank=True, null=True)
     khis_data = models.CharField(
         max_length=255, blank=True, null=True)
 
@@ -49,18 +29,6 @@ class indicators(models.Model):
     class Meta:
         db_table = 'moh_indicators'
         verbose_name_plural = 'indicators'
-
-
-class indicator_category(models.Model):
-    category_name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.category_name
-
-    class Meta:
-        db_table = 'indicator_category'
-        verbose_name_plural = 'Indicator Categories'
-
 
 class counties(models.Model):
     name = models.CharField(max_length=100)
@@ -120,24 +88,10 @@ class indicatorType(models.Model):
         verbose_name_plural = 'indicators types'
 
 
-class indicatorGroups(models.Model):
-    id = models.CharField(max_length=100, primary_key=True)
-    name = models.CharField(max_length=255)
-    lastUpdated = models.DateTimeField()
-    created = models.DateTimeField()
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'moh_indicator_groups'
-        verbose_name_plural = 'indicators groups'
-
-
 class middleware_settings(models.Model):
     syncdata = models.BooleanField(default=False)
     client_url = models.URLField(
-        default="https://test.hiskenya.org/dhiske/", blank=True, null=True)
+        default="http://nhdc-kmhfl.health.go.ke/api/analytics.json?dimension=dx:W0ChhvyVtSX;EXmKDudsMNb;fuX0Qzg218I;fXErbzykgKz;kAvepmaQr9c;WOjriy3w7Fh;NYkr7LlxmUg;qw7eJpLE3vK;du5RMT3aecB;wu0ITFRjUzF;D9YwtS6RhQ1;xMNhnyu7vm1;kLXGWRLzCAw;oCFXmpol7D8;F9OR49Lc1aR;cBTa1jVzT8f;J4vNm7YEkdj;M5zablilTPO;dlldM4hP2Wk;vRVLmMCRuN9;fqj4xHg5t5t;vxJMFFkYUsI;Pbl9S4jD6sw;Kb5NZ5AadY3;tv9aE5k0IqF;usVko3BNxUz;EzuWF48G6ep;jF9pdL3SuHL;cr3CkBQcqGI;ZG5LOYaEecn;Te9pM8UoINV;OePJt8CcZ0d;lj9QYJqS7bN;gMICOUtzqRb;XiRbc0DSMOH;YXJf27jfkvS;JiuqbydCIcy;pkShOkgNQt2;atSQz5O7e2A;gTkVw97FnQK;Yk5WVF4EQoX;kmuBTU9NAjw;G7zACbrJMmY;Th97Ccd4BuJ;OYGWqG4HnBZ;M6hV3ObOCHV;NOga2tabGrd;q50r2FWg6de;hrRIahUNIDc;l2OiHQroa5M&dimension=pe:2022Q4;2023Q1;2023Q2;2023Q3&tableLayout=true&rows=pe&columns=dx&skipRounding=false&completedOnly=false&filter=ou:{org}", blank=True, null=True)
 
     def __str__(self):
         return "Data Sync Settings"
@@ -175,7 +129,7 @@ class Data_Mapping_Files(models.Model):
     mapping_file = models.FileField(upload_to='mapping_files/%Y')
 
     def __str__(self):
-        return self.mapping_files.url
+        return self.mapping_file.url
 
     class Meta:
         db_table = 'data_mapping_files'

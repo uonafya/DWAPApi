@@ -20,11 +20,6 @@ class IndicatorTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class IndicatorGroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = indicatorGroups
-        fields = '__all__'
-
 
 class middleware_settingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,12 +30,6 @@ class middleware_settingSerializer(serializers.ModelSerializer):
 class ComparisonDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = final_comparison_data
-        fields = '__all__'
-
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = indicator_category
         fields = '__all__'
 
 
