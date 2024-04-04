@@ -2,9 +2,7 @@ from django.db import models
 from django.urls import reverse
 # Create your models here.
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
-
 
 class Notifications(models.Model):
     created_by = models.ForeignKey(User,
@@ -13,6 +11,7 @@ class Notifications(models.Model):
                                       on_delete=models.CASCADE, related_name='notified_users')
     message = models.TextField(
         max_length=2500, default="Hellow,Welcome to Data Alignment Solutions")
+    attachment=models.FileField(upload_to='notifications/attachments',blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
 
