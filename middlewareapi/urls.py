@@ -21,7 +21,7 @@ urlpatterns = [
     path('api/', include("api.urls")),
     path('api/', include("authman.urls")),
     path('api/', include("mapping_rules.urls")),
-
+    path('api/',include('datapull.urls')),
 ]
 # default: "Django Administration"
 admin.site.site_header = 'Data IL Backend Administration'
