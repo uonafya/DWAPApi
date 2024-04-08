@@ -1,6 +1,8 @@
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.urls import reverse
+from tinymce.models import  HTMLField
+
 # Create your models here.
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -37,6 +39,9 @@ class EmailConfig(models.Model):
     email_port = models.CharField(max_length=5, default=465)
     use_tls = models.BooleanField(default=True)
     fail_silently = models.BooleanField(default=True)
+    email_message_template=HTMLField(default="\
+                                     Dear {County_Administrator_Name},I hope this email finds you well.\
+                                    This is a notification to bring to your attention some missed opportunities that have been identified within our county's operations. Upon review of recent data and analysis, it has become apparent that certain areas have not been fully optimized, potentially resulting in lost efficiency and effectiveness.")
 
     # def save(self, *args, **kwargs):
     #     self.email_password = make_password(self.email_password)

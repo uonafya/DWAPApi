@@ -19,14 +19,6 @@ class IndicatorTypeSerializer(serializers.ModelSerializer):
         model = indicatorType
         fields = '__all__'
 
-
-
-class middleware_settingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = middleware_settings
-        fields = '__all__'
-
-
 class ComparisonDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = final_comparison_data
@@ -37,13 +29,6 @@ class CountySerializer(serializers.ModelSerializer):
     class Meta:
         model = counties
         fields = ('name',)
-
-
-class ScheduleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = schedule_settings
-        fields = '__all__'
-
 
 class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:

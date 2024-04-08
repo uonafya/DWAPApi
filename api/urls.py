@@ -10,16 +10,12 @@ router = DefaultRouter()
 router.register('listfiles', FileUploadViewSet)
 router.register('listindicators', IndicatorViewSet)
 router.register('listindicator_types', IndicatorTypeViewSet)
-router.register('listmiddleware_settings', MiddlewareSettingsViewSet)
 router.register('listcounties', CountyViewSet)
 
 urlpatterns = [
     path('create_indicator/', IndicatorCreate.as_view(), name='create_indicator'),
     path('create_indicator_type/',
          IndicatorTypeCreate.as_view(), name='create_indicator_type'),
-    path('listschedules/', ScheduleView.as_view(), name='schedules'),
-    path('listschedules/<int:pk>/',
-         ScheduleView.as_view(), name='update_schedules'),
     path('indicators/<int:limit>/', IndicatorList.as_view(),
          name='indicators'),
     path('indicators/filter/<date:from_date>/<date:to_date>/<int:limit>/', IndicatorFilter.as_view(),
@@ -28,8 +24,6 @@ urlpatterns = [
          name='indicators_count'),
     path('total_records_count/', get_records_count,
          name='total_records_count'),
-    path('sync_data/', sync_data,
-         name='sync_data'),
     path('total_count/', total_count,
          name='total_count'),
     #     path('map_data/<str:county>/<str:category>/<date:from_date>/<date:to_date>/<int:limit>/', map_data,

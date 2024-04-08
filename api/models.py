@@ -87,33 +87,6 @@ class indicatorType(models.Model):
         db_table = 'moh_indicator_types'
         verbose_name_plural = 'indicators types'
 
-
-class middleware_settings(models.Model):
-    syncdata = models.BooleanField(default=False)
-    client_url = models.URLField(
-        default="http://nhdc-kmhfl.health.go.ke/api/analytics.json?dimension=dx:W0ChhvyVtSX;EXmKDudsMNb;fuX0Qzg218I;fXErbzykgKz;kAvepmaQr9c;WOjriy3w7Fh;NYkr7LlxmUg;qw7eJpLE3vK;du5RMT3aecB;wu0ITFRjUzF;D9YwtS6RhQ1;xMNhnyu7vm1;kLXGWRLzCAw;oCFXmpol7D8;F9OR49Lc1aR;cBTa1jVzT8f;J4vNm7YEkdj;M5zablilTPO;dlldM4hP2Wk;vRVLmMCRuN9;fqj4xHg5t5t;vxJMFFkYUsI;Pbl9S4jD6sw;Kb5NZ5AadY3;tv9aE5k0IqF;usVko3BNxUz;EzuWF48G6ep;jF9pdL3SuHL;cr3CkBQcqGI;ZG5LOYaEecn;Te9pM8UoINV;OePJt8CcZ0d;lj9QYJqS7bN;gMICOUtzqRb;XiRbc0DSMOH;YXJf27jfkvS;JiuqbydCIcy;pkShOkgNQt2;atSQz5O7e2A;gTkVw97FnQK;Yk5WVF4EQoX;kmuBTU9NAjw;G7zACbrJMmY;Th97Ccd4BuJ;OYGWqG4HnBZ;M6hV3ObOCHV;NOga2tabGrd;q50r2FWg6de;hrRIahUNIDc;l2OiHQroa5M&dimension=pe:2022Q4;2023Q1;2023Q2;2023Q3&tableLayout=true&rows=pe&columns=dx&skipRounding=false&completedOnly=false&filter=ou:{org}", blank=True, null=True)
-
-    def __str__(self):
-        return "Data Sync Settings"
-
-    class Meta:
-        db_table = 'middleware_settings'
-        verbose_name_plural = 'Data Sync Settings'
-
-
-class schedule_settings(models.Model):
-    sync_time = models.DateTimeField()
-    shedule_description = models.CharField(
-        default="Weekely  data sync", max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return "Schedule Settings"
-
-    class Meta:
-        db_table = 'schedule_settings'
-        verbose_name_plural = 'Schedule Settings'
-
-
 class total_records(models.Model):
     records = models.IntegerField(default=0)
 

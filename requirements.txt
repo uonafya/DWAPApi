@@ -5,6 +5,8 @@ Django==5.0.4
 django-cors-headers==4.3.1
 django-jazzmin==2.6.1
 djangorestframework==3.15.1
+django-tinymce
+django-tinymce4-lite
 fuzzywuzzy==0.18.0
 idna==3.6
 mysqlclient==2.2.4
