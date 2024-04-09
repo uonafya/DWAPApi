@@ -64,15 +64,19 @@ class DataClientViewSet(viewsets.ViewSet):
 
     def create(self, request):
         """
-        ou:org_level & org_id
+        ou:org_level & or g_id
         pe:period i.e 202309(sept 2023)
         """
-        params = request.data.get('params',{
-            'dimension': ['pe:202309', 'ou:LEVEL-5;fVra3Pwta0Q'],
-            'outputIdScheme': 'NAME'
-        })
-        credentials = ('healthit', 'rr23H3@1th1Tmtct')
-        url = "https://khis.pmtct.uonbi.ac.ke/api/29/analytics.json"
+        params = {}
+        # params = request.data.get('params',{
+        #     'dimension': ['pe:202309', 'ou:LEVEL-5;fVra3Pwta0Q'],
+        #     'outputIdScheme': 'NAME'
+        # })
+        credentials = ('testusercounty', '123456@Ab')
+        url = f"https://hiskenya.org/api/analytics.json?dimension=ou:LEVEL-5;fVra3Pwta0Q&dimension=dx:f9vesk5d4IY;uSxBUWnagGg;qSgLzXh46n9;ETX9cUWF43c;mQz4DhBSv9V;LQpQQP3KnU1;oZc8MNc0nLZ;nwXS5vxrrr7;hn3aChn4sVx;AfHArvGun12;hHLR1HP8xzI;lJpaBye9B0H;WNFWVHMqPv9;ckPCoAwmWmT;vkOYqEesPAi;UMyB7dSIdz1;HAumxpKBaoK;Jn6ATTfXp02;RY1js5pK2Ep&dimension=pe:202402&outputIdScheme=UID"
         client = PMTCTDataClient(url,params=params, credentials=credentials)
         data = client.pull_data()
         return Response(data)
+    
+    
+
