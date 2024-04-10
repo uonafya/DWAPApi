@@ -126,7 +126,10 @@ def dataAnalytics(data):
                 })
     except Exception as e:
         print(f" Error: {e}")
+
         ana_lytics['data'].append({})
+
+            # pass
     return ana_lytics
 
 class DataClientViewSet(viewsets.ViewSet):
@@ -135,15 +138,21 @@ class DataClientViewSet(viewsets.ViewSet):
 
     def create(self, request):
         """
-        ou:org_level & org_id
+        ou:org_level & or g_id
         pe:period i.e 202309(sept 2023)
         """
-        params = request.data.get('params',{
-            'dimension': ['pe:202309', 'ou:LEVEL-5;fVra3Pwta0Q'],
-            'outputIdScheme': 'NAME'
-        })
-        credentials = ('healthit', 'rr23H3@1th1Tmtct')
-        url = "https://khis.pmtct.uonbi.ac.ke/api/29/analytics.json"
+        params = {
+            'dimension': ['pe:202402','ou:LEVEL-5;fVra3Pwta0Q',
+            'dx:f9vesk5d4IY;uSxBUWnagGg;qSgLzXh46n9;ETX9cUWF43c;mQz4DhBSv9V;LQpQQP3KnU1;oZc8MNc0nLZ;nwXS5vxrrr7;hn3aChn4sVx;AfHArvGun12;hHLR1HP8xzI;lJpaBye9B0H;WNFWVHMqPv9;ckPCoAwmWmT;vkOYqEesPAi;UMyB7dSIdz1;HAumxpKBaoK;Jn6ATTfXp02;RY1js5pK2Ep'],
+            'outputIdScheme': 'UID'
+        }
+        credentials = ('testusercounty', '123456@Ab')
+        url = f"https://hiskenya.org/api/analytics.json"
         client = PMTCTDataClient(url,params=params, credentials=credentials)
         data = client.pull_data()
         return Response(data)
+
+
+
+
+

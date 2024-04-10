@@ -10,6 +10,7 @@ django-tinymce4-lite
 fuzzywuzzy==0.18.0
 idna==3.6
 mysqlclient
+mysql-connector-python
 #numpy==1.26.4
 pandas
 pillow==10.3.0

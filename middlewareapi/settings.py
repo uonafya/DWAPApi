@@ -116,7 +116,7 @@ if DEVELOPMENT_MODE is True:
             'NAME': 'middlewaredb',
             'HOST': 'localhost',
             'USER': 'root',
-            'PASSWORD': '@Root123',
+            'PASSWORD': 'root',
             'PORT': '3306'
         }
     }
@@ -129,7 +129,7 @@ elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
             'NAME': 'middlewaredb',
             'HOST': 'localhost',
             'USER': 'root',
-            'PASSWORD': '@Root123',
+            'PASSWORD': 'root',
             'PORT': '3306'
         }
     }
