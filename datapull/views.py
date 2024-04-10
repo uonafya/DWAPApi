@@ -7,8 +7,9 @@ from rest_framework.decorators import api_view
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication,TokenAuthentication
-from .utils import PMTCTDataClient
+from .utils import DataClient
 from .models import *
+from api.models import *
 from .serializers import *
 
 import pandas as pd
@@ -61,13 +62,11 @@ def sync_data(request):
     return Response({"id": sets.id, "synctdata": str(sets.syncdata).lower(), "client_url": sets.client_url})
 
 def classify(diff_anc):
-    anc_status = ""
+    anc_status = "normal"
     if(diff_anc< 0):
         anc_status = "critical"
     elif(diff_anc>=0):
         anc_status = 'stable'
-    else:
-        anc_status='normal'
     return anc_status
 
 def dataAnalytics(data):
@@ -77,7 +76,7 @@ def dataAnalytics(data):
     try:
         if(len(data_rows)>0):
             org_units = data['metaData']['dimensions']['ou']
-            print(org_units)
+            #print(org_units)
             for org in org_units:
                 anc_status = ""
                 moh_711_new_sum = 0
@@ -164,14 +163,19 @@ def dataAnalytics(data):
                 if(len(moh_731_HV02_41)> 0):
                     moh_731_HV02_41_sum = moh_731_HV02_41[3].sum()
 
-                print(f"orgname: {org_name} moh_711_new_sum: {moh_711_new_sum}")
+                #print(f"orgname: {org_name} moh_711_new_sum: {moh_711_new_sum}")
                 diff_anc = moh_731_HV02_01_sum-moh_711_new_sum
                 missed_opp = moh_731_HV02_01_sum - (moh_731_HV02_03_sum + moh_731_HV02_04_sum + moh_731_HV02_05_sum + moh_731_HV02_06_sum)
-
 
                 anc_status = classify(diff_anc)
                 # breakpoint()
                 missed_opp_status = classify(diff_anc=-missed_opp)
+                if(diff_anc< 0):
+                    anc_status = "critical"
+                elif(diff_anc>0):
+                    anc_status = 'stable'
+                else:
+                    anc_status='normal'
 
                 ana_lytics['data'].append({
                     "ou_name": org_name,
@@ -214,15 +218,72 @@ class DataClientViewSet(viewsets.ViewSet):
         pe:period i.e 202309(sept 2023)
         """
         params = {
-            'dimension': ['pe:202402','ou:LEVEL-5;fVra3Pwta0Q',
-            'dx:f9vesk5d4IY;uSxBUWnagGg;qSgLzXh46n9;ETX9cUWF43c;mQz4DhBSv9V;LQpQQP3KnU1;oZc8MNc0nLZ;nwXS5vxrrr7;hn3aChn4sVx;AfHArvGun12;hHLR1HP8xzI;lJpaBye9B0H;WNFWVHMqPv9;ckPCoAwmWmT;vkOYqEesPAi;UMyB7dSIdz1;HAumxpKBaoK;Jn6ATTfXp02;RY1js5pK2Ep'],
-            'outputIdScheme': 'UID'
+            # 'dimension': ['pe:202402','ou:LEVEL-3;fVra3Pwta0Q',
+            # 'dx:f9vesk5d4IY;uSxBUWnagGg;qSgLzXh46n9;ETX9cUWF43c;mQz4DhBSv9V;LQpQQP3KnU1;oZc8MNc0nLZ;nwXS5vxrrr7;hn3aChn4sVx;AfHArvGun12;hHLR1HP8xzI;lJpaBye9B0H;WNFWVHMqPv9;ckPCoAwmWmT;vkOYqEesPAi;UMyB7dSIdz1;HAumxpKBaoK;Jn6ATTfXp02;RY1js5pK2Ep'],
+            # 'outputIdScheme': 'UID'
         }
+        print(request.query_params)
+        query_params=request.query_params
+        period=query_params.get('period','202402')
+        org_level=query_params.get('org_level','-3')
+        print(period,org_level)
+        org_id=query_params.get('org_id','fVra3Pwta0Q')
         credentials = ('testusercounty', '123456@Ab')
-        url = f"https://hiskenya.org/api/analytics.json"
-        client = PMTCTDataClient(url,params=params, credentials=credentials)
-        data = client.pull_data()
-        return Response(data)
+        url = f"https://hiskenya.org/api/analytics.json?dimension=ou:LEVEL{org_level};{org_id}&dimension=dx:f9vesk5d4IY;uSxBUWnagGg;qSgLzXh46n9;ETX9cUWF43c;mQz4DhBSv9V;LQpQQP3KnU1;oZc8MNc0nLZ;nwXS5vxrrr7;hn3aChn4sVx;AfHArvGun12;hHLR1HP8xzI;lJpaBye9B0H;WNFWVHMqPv9;ckPCoAwmWmT;vkOYqEesPAi;UMyB7dSIdz1;HAumxpKBaoK;Jn6ATTfXp02;RY1js5pK2Ep&dimension=pe:{period}&outputIdScheme=UID"
+        client = DataClient(url,params=params, credentials=credentials)
+        data = client.pull_pmtct_data()
+        print(data)
+        analytics_data=dataAnalytics(data)
+        return Response(analytics_data)
+
+class EIDVLDataViewSet(viewsets.ViewSet):
+    authentication_classes = [BasicAuthentication,TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def create(self,request):
+        query_params=request.query_params
+        org_name=query_params.get('org_name','')
+        eid_data=[]
+        #wards=ward.objects.filter(subcounties__counties__name__icontains=org_name)
+        data=DataClient("",{},()).pull_eid_data()
+        ##filter data
+        data=list(filter(lambda x:str(org_name).lower() in str(x['county']).lower(),data))
+        ##map wards and subcounties
+        for entry in data:
+            facility_code = entry['facilitycode']
+            # Fetch the corresponding facility object
+            facility = Facilities.objects.filter(mfl_code=facility_code).first()
+            # Get the subcounty and county names from the facility's ward
+            if facility:
+                wards = facility.ward_set.all()
+                if wards:
+                    for ward in wards:
+                        subcounty = ward.subcounties_set.first()
+                        if subcounty:
+                            county = subcounty.counties_set.first()
+                            eid_data.append({
+                                'positives': entry['positives'],
+                                'enrolled': entry['enrolled'],
+                                'total':int(entry['positives'])+int(entry['enrolled']),
+                                'ward': ward.name,
+                                'subcounty': subcounty.name,
+                                'county': entry['county'],
+                                'facility': entry['facility'],
+                                'facilitycode': facility_code
+                            })
+            else:
+                eid_data.append({
+                            'positives': entry['positives'],
+                            'enrolled': entry['enrolled'],
+                            'total':int(entry['positives'])+int(entry['enrolled']),
+                            'ward':'',
+                            'subcounty': '',
+                            'county':entry['county'],
+                            'facility': entry['facility'],
+                            'facilitycode': facility_code
+                        })
+        return Response(eid_data)
+
 
 
 
