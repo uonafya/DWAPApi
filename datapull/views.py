@@ -62,15 +62,19 @@ def sync_data(request):
 
 def dataAnalytics(data):
     data_rows = pd.DataFrame(data['rows'])
+    data_rows[3] = data_rows[3].astype(int)
     ana_lytics = {"data": []}
     try:
         if(len(data_rows)>0):
             org_units = data['metaData']['dimensions']['ou']
             print(org_units)
             for org in org_units:
+                
+                
                 anc_status = ""
                 moh_711_new_sum = 0
                 moh_731_HV02_01_sum = 0
+                
                 org_data = {}
                 moh_711_new = data_rows[(data_rows[0] == 'f9vesk5d4IY') & (data_rows[1] == org)]
                 moh_731_HV02_01 = data_rows[(data_rows[0] == 'uSxBUWnagGg') & (data_rows[1] == org)]
@@ -95,16 +99,12 @@ def dataAnalytics(data):
                 org_name = data['metaData']['items'][org]['name']
 
                 if(len(moh_711_new)> 0):
-                    moh_711_new[3] = moh_711_new[3].astype(int)
                     moh_711_new_sum = moh_711_new[3].sum()
                 if(len(moh_731_HV02_01)> 0):
-                    moh_731_HV02_01[3] = moh_731_HV02_01[3].astype(int)
                     moh_731_HV02_01_sum = moh_731_HV02_01[3].sum()
                 if(len(moh_731_HV02_03)> 0):
-                    moh_731_HV02_03[3] = moh_731_HV02_03[3].astype(int)
                     moh_731_HV02_03_sum = moh_731_HV02_03[3].sum()
                 if(len(moh_731_HV02_04)> 0):
-                    moh_731_HV02_04[3] = moh_731_HV02_04[3].astype(int)
                     moh_731_HV02_04_sum = moh_731_HV02_04[3].sum()
             
 
