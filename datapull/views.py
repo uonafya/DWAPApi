@@ -81,6 +81,7 @@ def dataAnalytics(data):
                 anc_status = ""
                 moh_711_new_sum = 0
                 moh_731_HV02_01_sum = 0
+
                 org_data = {}
                 moh_711_new = data_rows[(data_rows[0] == 'f9vesk5d4IY') & (data_rows[1] == org)]
                 moh_731_HV02_01 = data_rows[(data_rows[0] == 'uSxBUWnagGg') & (data_rows[1] == org)]
@@ -103,6 +104,8 @@ def dataAnalytics(data):
                 moh_731_HV02_41 = data_rows[(data_rows[0] == 'RY1js5pK2Ep') & (data_rows[1] == org)]
 
                 org_name = data['metaData']['items'][org]['name']
+
+                moh_711_new_sum = moh_731_HV02_01_sum = moh_731_HV02_03_sum = moh_731_HV02_04_sum = moh_731_HV02_05_sum = moh_731_HV02_06_sum = moh_731_HV02_10_sum = moh_731_HV02_11_sum = moh_731_HV02_12_sum = moh_731_HV02_13_sum = moh_731_HV02_14_sum = moh_731_HV02_16_sum = moh_731_HV02_17_sum = moh_731_HV02_18_sum = moh_731_HV02_19_sum = moh_731_HV02_21_sum = moh_731_HV02_39_sum = moh_731_HV02_40_sum = moh_731_HV02_41_sum = 0
 
                 moh_711_new_sum = moh_731_HV02_01_sum = moh_731_HV02_03_sum = moh_731_HV02_04_sum = moh_731_HV02_05_sum = moh_731_HV02_06_sum = moh_731_HV02_10_sum = moh_731_HV02_11_sum = moh_731_HV02_12_sum = moh_731_HV02_13_sum = moh_731_HV02_14_sum = moh_731_HV02_16_sum = moh_731_HV02_17_sum = moh_731_HV02_18_sum = moh_731_HV02_19_sum = moh_731_HV02_21_sum = moh_731_HV02_39_sum = moh_731_HV02_40_sum = moh_731_HV02_41_sum = 0
 
@@ -163,19 +166,13 @@ def dataAnalytics(data):
                 if(len(moh_731_HV02_41)> 0):
                     moh_731_HV02_41_sum = moh_731_HV02_41[3].sum()
 
-                #print(f"orgname: {org_name} moh_711_new_sum: {moh_711_new_sum}")
+                print(f"orgname: {org_name} moh_711_new_sum: {moh_711_new_sum}")
                 diff_anc = moh_731_HV02_01_sum-moh_711_new_sum
                 missed_opp = moh_731_HV02_01_sum - (moh_731_HV02_03_sum + moh_731_HV02_04_sum + moh_731_HV02_05_sum + moh_731_HV02_06_sum)
 
                 anc_status = classify(diff_anc)
                 # breakpoint()
                 missed_opp_status = classify(diff_anc=-missed_opp)
-                if(diff_anc< 0):
-                    anc_status = "critical"
-                elif(diff_anc>0):
-                    anc_status = 'stable'
-                else:
-                    anc_status='normal'
 
                 ana_lytics['data'].append({
                     "ou_name": org_name,
