@@ -19,7 +19,11 @@ class DataClient:
             return {"Error": response.status_code}
 
     def pull_eid_data(self):
-        url='https://eiddash.nascop.org/api/datahub/hei/validation/summary/2024/04'
+        print(self.params)
+        y=self.params['y']
+        m=self.params['m']
+        url=f'https://eiddash.nascop.org/api/datahub/hei/validation/summary/{y}/{m}'
+        #print(url)
         response = requests.get(url)
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
