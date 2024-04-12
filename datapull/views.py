@@ -62,11 +62,11 @@ def sync_data(request):
     return Response({"id": sets.id, "synctdata": str(sets.syncdata).lower(), "client_url": sets.client_url})
 
 def classify(diff_anc):
-    anc_status = "normal"
+    anc_status = "okay"
     if(diff_anc< 0):
-        anc_status = "critical"
+        anc_status = "missed"
     elif(diff_anc>=0):
-        anc_status = 'stable'
+        anc_status = 'okay'
     return anc_status
 
 def dataAnalytics(data):
@@ -222,7 +222,7 @@ class DataClientViewSet(viewsets.ViewSet):
         period=query_params.get('period','202402')
         org_level=query_params.get('org_level','-3')
         # org_name=org_name.replace('County','')
-        org_id='fVra3Pwta0Q'
+        org_id = 'sPkRcDvhGWA'  # fVra3Pwta0Q##migori,3AjkG3zaihdSs##nairobi #kisii#sPkRcDvhGWA
         #print(period,org_level,org_id)
         credentials = ('TitusO', 'Password@123')
         url = f"https://hiskenya.org/api/analytics.json?dimension=ou:LEVEL{org_level};{org_id}&dimension=dx:f9vesk5d4IY;uSxBUWnagGg;qSgLzXh46n9;ETX9cUWF43c;mQz4DhBSv9V;LQpQQP3KnU1;oZc8MNc0nLZ;nwXS5vxrrr7;hn3aChn4sVx;AfHArvGun12;hHLR1HP8xzI;lJpaBye9B0H;WNFWVHMqPv9;ckPCoAwmWmT;vkOYqEesPAi;UMyB7dSIdz1;HAumxpKBaoK;Jn6ATTfXp02;RY1js5pK2Ep&dimension=pe:{period}&outputIdScheme=UID"
@@ -240,16 +240,19 @@ class EIDVLDataViewSet(viewsets.ViewSet):
     def create(self,request):
         query_params=request.query_params
         print(query_params)
-        org_name=query_params.get('org_name','')
-        org_name=org_name.replace('County','') if org_name.lower() !='all' else ''
-        period=query_params.get('period','202404')
+        org_name=str(query_params.get('org_name',''))
+        org_name=org_name.replace('County','').strip() if org_name.lower() !='all' else ''
+        period=query_params.get('period','202402')
+        print(org_name)
         y=period[:4]
         m=period[4:]
         eid_data=[]
         #wards=ward.objects.filter(subcounties__counties__name__icontains=org_name)
         data=DataClient("",{'y':y,'m':m},()).pull_eid_data()
         ##filter data
-        data=list(filter(lambda x:str(org_name).lower() in str(x['county']).lower(),data))
+        data = list(filter(lambda x: str(org_name).lower()
+                    in str(x['county']).lower(), data))
+        print(data)
         ##map wards and subcounties
         for entry in data:
             facility_code = entry['facilitycode']
