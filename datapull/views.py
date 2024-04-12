@@ -70,10 +70,10 @@ def classify(diff_anc):
     return anc_status
 
 def dataAnalytics(data):
-    data_rows = pd.DataFrame(data['rows'])
-    data_rows[3] = data_rows[3].astype(int)
     ana_lytics = {"data": []}
     try:
+        data_rows = pd.DataFrame(data['rows'])
+        data_rows[3] = data_rows[3].astype(int)
         if(len(data_rows)>0):
             org_units = data['metaData']['dimensions']['ou']
             #print(org_units)
@@ -201,7 +201,6 @@ def dataAnalytics(data):
                 })
     except Exception as e:
         print(f" Error: {e}")
-        ana_lytics['error'].append({"message": f"{e}"})
     return ana_lytics
 
 class DataClientViewSet(viewsets.ViewSet):
