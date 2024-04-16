@@ -32,6 +32,7 @@ class indicators(models.Model):
 
 class counties(models.Model):
     name = models.CharField(max_length=100)
+    org_id=models.CharField(max_length=100,null=True,blank=True,unique=True)
     subcounties=models.ManyToManyField("subcounties",blank=True,null=True)
 
     def __str__(self):
@@ -43,6 +44,7 @@ class counties(models.Model):
 
 class subcounties(models.Model):
     name = models.CharField(max_length=100)
+    org_id=models.CharField(max_length=100,null=True,blank=True,unique=True)
     wards=models.ManyToManyField("ward",blank=True,null=True)
 
     def __str__(self):
@@ -54,6 +56,7 @@ class subcounties(models.Model):
 
 class ward(models.Model):
     name = models.CharField(max_length=100)
+    org_id=models.CharField(max_length=100,null=True,blank=True,unique=True)
     facilities = models.ManyToManyField("Facilities",blank=True,null=True)
 
     def __str__(self):

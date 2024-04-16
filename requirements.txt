@@ -9,6 +9,8 @@ django-tinymce
 django-tinymce4-lite
 fuzzywuzzy==0.18.0
 idna==3.6
+# mysqlclient
+mysql-connector-python
 #mysqlclient
 #numpy==1.26.4
 pandas

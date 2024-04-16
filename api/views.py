@@ -150,9 +150,34 @@ class CountyViewSet(viewsets.ModelViewSet):
     serializer_class = CountySerializer
     permission_classes = ()
 
+    # currentCounties = ref([
+    #     "nK0A12Q7MvS", // homa bay
+    #     "sPkRcDvhGWA", // kisii
+    #     "uepLTG8wGWJ", // nyamira
+    #     "tAbBVBbueqD", // kisumu
+    #     "u4t9H8XyU9P", // siaya
+    #     "fVra3Pwta0Q", // migori
+    #     // 'Tvf1zgVZ0K4', // busia
+    #     // 'NjWSbQTwys4', // lamu
+    #     // 'nrI2khZx3d0', // kilifi
+    #     // 'JsH2bnvNt2d', // tan river
+    #     // 'N7YETT3A9r1', // kwale
+    #     // 'QyGNX2DpR4h', // taita taveta
+    #     'wsBsC6gjHvn', // mombasa
+    #     // 'KGHhQ5GLd4k', //
+    #     // 'BjC1xL40gHo', // kakamega
+    #     // 'sANMZ3lpqGs', // vihiga
+    #     // 'XWALbfAPa6n', // west pokot
+    #     // 'kphDeKClFch', // turkana
+    #     // 'mThvosEflAU', // trans nzoia
+    #     // 'kqJ83J2D72s', // naraok
+    #     // 'Eey8fT4Im3y', // marsabit
+    #     // 'vvOK1BxTbet', // baringo
+    #     // 'Ulj33KBau7V', //
+    # ])
+
     def get_queryset(self):
         queryset = super().get_queryset()  # Get the initial queryset
-
         # Get the 'county' parameter from the request query parameters
         user = self.request.user
         if user != None:
