@@ -117,7 +117,7 @@ if DEVELOPMENT_MODE is True:
         'PORT': os.environ.get('DB_PORT', '3306'),
         'NAME': os.environ.get('DB_NAME', 'middlewaredb'),
         'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', '123456@Ab'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'root'),
         'OPTIONS': {
             'autocommit': True,
         },

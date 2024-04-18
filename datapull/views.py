@@ -169,8 +169,6 @@ def dataAnalytics(data):
                 missed_maternal = (moh_731_HV02_10_sum + moh_731_HV02_11_sum + moh_731_HV02_12_sum + moh_731_HV02_13_sum + moh_731_HV02_14_sum) - (moh_731_HV02_16_sum + moh_731_HV02_17_sum + moh_731_HV02_18_sum + moh_731_HV02_19_sum + moh_731_HV02_21_sum)
                 infant_missed = (moh_731_HV02_10_sum + moh_731_HV02_11_sum + moh_731_HV02_12_sum + moh_731_HV02_13_sum + moh_731_HV02_14_sum) - (moh_731_HV02_39_sum + moh_731_HV02_40_sum + moh_731_HV02_41_sum)
 
-
-
                 anc_status = classify(diff_anc)
                 missed_maternal_status = classify(missed_maternal)
                 infant_missed_status = classify(infant_missed)
