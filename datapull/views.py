@@ -106,8 +106,6 @@ def dataAnalytics(data):
 
                 moh_711_new_sum = moh_731_HV02_01_sum = moh_731_HV02_03_sum = moh_731_HV02_04_sum = moh_731_HV02_05_sum = moh_731_HV02_06_sum = moh_731_HV02_10_sum = moh_731_HV02_11_sum = moh_731_HV02_12_sum = moh_731_HV02_13_sum = moh_731_HV02_14_sum = moh_731_HV02_16_sum = moh_731_HV02_17_sum = moh_731_HV02_18_sum = moh_731_HV02_19_sum = moh_731_HV02_21_sum = moh_731_HV02_39_sum = moh_731_HV02_40_sum = moh_731_HV02_41_sum = 0
 
-                moh_711_new_sum = moh_731_HV02_01_sum = moh_731_HV02_03_sum = moh_731_HV02_04_sum = moh_731_HV02_05_sum = moh_731_HV02_06_sum = moh_731_HV02_10_sum = moh_731_HV02_11_sum = moh_731_HV02_12_sum = moh_731_HV02_13_sum = moh_731_HV02_14_sum = moh_731_HV02_16_sum = moh_731_HV02_17_sum = moh_731_HV02_18_sum = moh_731_HV02_19_sum = moh_731_HV02_21_sum = moh_731_HV02_39_sum = moh_731_HV02_40_sum = moh_731_HV02_41_sum = 0
-
                 if(len(moh_711_new)> 0):
                     moh_711_new_sum = moh_711_new[3].sum()
 
@@ -168,9 +166,12 @@ def dataAnalytics(data):
                 #print(f"orgname: {org_name} moh_711_new_sum: {moh_711_new_sum}")
                 diff_anc = moh_731_HV02_01_sum-moh_711_new_sum
                 missed_opp = moh_731_HV02_01_sum - (moh_731_HV02_03_sum + moh_731_HV02_04_sum + moh_731_HV02_05_sum + moh_731_HV02_06_sum)
+                missed_maternal = (moh_731_HV02_10_sum + moh_731_HV02_11_sum + moh_731_HV02_12_sum + moh_731_HV02_13_sum + moh_731_HV02_14_sum) - (moh_731_HV02_16_sum + moh_731_HV02_17_sum + moh_731_HV02_18_sum + moh_731_HV02_19_sum + moh_731_HV02_21_sum)
+                infant_missed = (moh_731_HV02_10_sum + moh_731_HV02_11_sum + moh_731_HV02_12_sum + moh_731_HV02_13_sum + moh_731_HV02_14_sum) - (moh_731_HV02_39_sum + moh_731_HV02_40_sum + moh_731_HV02_41_sum)
 
                 anc_status = classify(diff_anc)
-                # breakpoint()
+                missed_maternal_status = classify(missed_maternal)
+                infant_missed_status = classify(infant_missed)
                 missed_opp_status = classify(diff_anc=-missed_opp)
 
                 ana_lytics['data'].append({
@@ -198,6 +199,10 @@ def dataAnalytics(data):
                     "moh_731_HV02_41": moh_731_HV02_41_sum,
                     "missed_opp": missed_opp,
                     "missed_opp_status": missed_opp_status,
+                    "missed_maternal": missed_maternal,
+                    "missed_maternal_status": missed_maternal_status,
+                    "infant_missed": infant_missed,
+                    "infant_missed_status": infant_missed_status
                 })
     except Exception as e:
         print(f" Error: {e}")
