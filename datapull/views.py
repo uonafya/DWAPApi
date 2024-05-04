@@ -13,6 +13,7 @@ from api.models import *
 from .serializers import *
 
 import pandas as pd
+import json
 
 class ScheduleView(APIView):
     serializer_class = ScheduleSerializer
@@ -70,6 +71,8 @@ def classify(diff_anc):
     return anc_status
 
 def dataAnalytics(data):
+    # with open("nairobi.json","w") as d:
+    #     json.dump(data,d)
     ana_lytics = {"data": []}
     try:
         data_rows = pd.DataFrame(data['rows'])
@@ -103,6 +106,8 @@ def dataAnalytics(data):
                 moh_731_HV02_41 = data_rows[(data_rows[0] == 'RY1js5pK2Ep') & (data_rows[1] == org)]
 
                 org_name = data['metaData']['items'][org]['name']
+                ouHierarchy=data['metaData']['ouHierarchy'][org]
+                ouNameHierarchy=data['metaData']['ouNameHierarchy'][org]
 
                 moh_711_new_sum = moh_731_HV02_01_sum = moh_731_HV02_03_sum = moh_731_HV02_04_sum = moh_731_HV02_05_sum = moh_731_HV02_06_sum = moh_731_HV02_10_sum = moh_731_HV02_11_sum = moh_731_HV02_12_sum = moh_731_HV02_13_sum = moh_731_HV02_14_sum = moh_731_HV02_16_sum = moh_731_HV02_17_sum = moh_731_HV02_18_sum = moh_731_HV02_19_sum = moh_731_HV02_21_sum = moh_731_HV02_39_sum = moh_731_HV02_40_sum = moh_731_HV02_41_sum = 0
 
@@ -171,11 +176,13 @@ def dataAnalytics(data):
 
                 anc_status = classify(diff_anc)
                 missed_maternal_status = classify(missed_maternal)
-                infant_missed_status = classify(infant_missed)
+                infant_missed_status = "missed" if infant_missed>0 else "okay"
                 missed_opp_status = classify(diff_anc=-missed_opp)
 
                 ana_lytics['data'].append({
                     "ou_name": org_name,
+                    "ouHierarchy":ouHierarchy,
+                    "ouNameHierarchy":ouNameHierarchy,
                     "moh_711_new": moh_711_new_sum,
                     "moh_731_HV02_01": moh_731_HV02_01_sum,
                     "diff_anc": diff_anc,
@@ -225,12 +232,12 @@ class DataClientViewSet(viewsets.ViewSet):
         print(request.query_params)
         query_params=request.query_params
         period=query_params.get('period','202402')
-        org_level=query_params.get('org_level','-3')
+        org_level=query_params.get('org_level','-2')
         # org_name=org_name.replace('County','')
-        org_id = 'sPkRcDvhGWA'  # fVra3Pwta0Q##migori,3AjkG3zaihdSs##nairobi #kisii#sPkRcDvhGWA
+        org_id = 'jkG3zaihdSs'  # fVra3Pwta0Q##migori,jkG3zaihdSs##nairobi #kisii#sPkRcDvhGWA
         #print(period,org_level,org_id)
         credentials = ('TitusO', 'Password@123')
-        url = f"https://hiskenya.org/api/analytics.json?dimension=ou:LEVEL{org_level};{org_id}&dimension=dx:f9vesk5d4IY;uSxBUWnagGg;qSgLzXh46n9;ETX9cUWF43c;mQz4DhBSv9V;LQpQQP3KnU1;oZc8MNc0nLZ;nwXS5vxrrr7;hn3aChn4sVx;AfHArvGun12;hHLR1HP8xzI;lJpaBye9B0H;WNFWVHMqPv9;ckPCoAwmWmT;vkOYqEesPAi;UMyB7dSIdz1;HAumxpKBaoK;Jn6ATTfXp02;RY1js5pK2Ep&dimension=pe:{period}&outputIdScheme=UID"
+        url = f"https://hiskenya.org/api/analytics.json?dimension=ou:LEVEL{org_level};{org_id}&dimension=dx:f9vesk5d4IY;uSxBUWnagGg;qSgLzXh46n9;ETX9cUWF43c;mQz4DhBSv9V;LQpQQP3KnU1;oZc8MNc0nLZ;nwXS5vxrrr7;hn3aChn4sVx;AfHArvGun12;hHLR1HP8xzI;lJpaBye9B0H;WNFWVHMqPv9;ckPCoAwmWmT;vkOYqEesPAi;UMyB7dSIdz1;HAumxpKBaoK;Jn6ATTfXp02;RY1js5pK2Ep&showHierarchy=true&hierarchyMeta=true&dimension=pe:{period}&outputIdScheme=UID"
         #print(url)
         client = DataClient(url,params=params, credentials=credentials)
         data = client.pull_pmtct_data()
@@ -257,7 +264,7 @@ class EIDVLDataViewSet(viewsets.ViewSet):
         ##filter data
         data = list(filter(lambda x: str(org_name).lower()
                     in str(x['county']).lower(), data))
-        print(data)
+        #print(data)
         ##map wards and subcounties
         for entry in data:
             facility_code = entry['facilitycode']
