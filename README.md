@@ -5,7 +5,9 @@ khis middleware api
 - Install Python 3.9+ or any later version
 #### Create an env
 - Move into the project folder and create a virtual env
-```sh python -m venv env```
+```sh
+python -m venv env
+```
 #### Activate env & Install requirements
 ```sh
  . env/bin/activate
