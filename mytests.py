@@ -17,3 +17,5 @@ investment = 300000
 interest_rate = 15  # interest rate in percent
 days_to_maturity = 91  # days to maturity
 
+price = calculate_price_per_100(investment, interest_rate, days_to_maturity)
+print(f"The price for an investment of {investment} at an interest rate of {interest_rate}% for {days_to_maturity} days is: {price:.2f} and a gain of {2*(investment-price)}")
